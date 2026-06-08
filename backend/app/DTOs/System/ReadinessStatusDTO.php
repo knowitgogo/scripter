@@ -25,7 +25,9 @@ final class ReadinessStatusDTO extends DataTransferObject
      */
     public static function fromChecks(array $checks, string $version = 'v1'): self
     {
-        $isReady = collect($checks)->every(static fn (string $state): bool => $state === 'ok');
+        $isReady = collect($checks)->every(
+            static fn (string $state): bool => in_array($state, ['ok', 'skipped'], true),
+        );
 
         return new self(
             status: $isReady ? 'ready' : 'not_ready',

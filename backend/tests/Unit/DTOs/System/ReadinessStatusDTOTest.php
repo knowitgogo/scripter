@@ -33,4 +33,16 @@ final class ReadinessStatusDTOTest extends TestCase
         $this->assertFalse($status->isReady());
         $this->assertSame('not_ready', $status->status);
     }
+
+    #[Test]
+    public function from_checks_treats_skipped_as_ready(): void
+    {
+        $status = ReadinessStatusDTO::fromChecks([
+            'database' => 'ok',
+            'cache' => 'ok',
+            'redis' => 'skipped',
+        ]);
+
+        $this->assertTrue($status->isReady());
+    }
 }

@@ -169,6 +169,31 @@ final class WebsiteRepository extends EloquentRepository implements UuidReposito
 'website_uuid' => ['required', new ValidUuid],
 ```
 
+## Redis, cache, and queues
+
+Infrastructure settings live in `config/infrastructure.php`. Defaults use **database** cache and **database** queues per ADR; Redis is opt-in via `REDIS_ENABLED=true`.
+
+| Component | Default | Redis mode |
+|-----------|---------|------------|
+| Cache | `CACHE_STORE=database` | `CACHE_STORE=redis` |
+| Queue | `QUEUE_CONNECTION=database` | `QUEUE_CONNECTION=redis` |
+| Failover | — | `CACHE_FAILOVER_STORES=redis,database,file` |
+
+**Abstractions (use in Services, not facades directly):**
+
+| Service | Repository | Purpose |
+|---------|------------|---------|
+| `CacheService` | `CacheRepositoryInterface` | Pattern-based cache-aside |
+| `QueueService` | `QueueDispatcherInterface` | Dispatch to `default`, `analytics`, `billing` queues |
+
+**Cache key patterns** (from architecture): `widget_config`, `widget_catalog`, `user_permissions`, `analytics_dashboard`, `plan_limits`.
+
+**Supervisor worker command:**
+
+```bash
+php artisan queue:work --queue=default,analytics,billing --tries=3
+```
+
 ## OpenAPI
 
 The contract lives at `openapi/openapi.yaml`. Extend this file as endpoints are added. Contract tests in `tests/Contract/` validate the spec artifact.

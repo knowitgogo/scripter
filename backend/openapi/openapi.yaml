@@ -171,6 +171,11 @@ components:
               type: string
               enum: [ok, fail]
               example: ok
+            redis:
+              type: string
+              enum: [ok, fail]
+              description: Present when REDIS_ENABLED=true
+              example: ok
         version:
           type: string
           example: v1

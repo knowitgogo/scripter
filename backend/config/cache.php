@@ -99,10 +99,10 @@ return [
 
         'failover' => [
             'driver' => 'failover',
-            'stores' => [
-                'database',
-                'array',
-            ],
+            'stores' => array_map(
+                trim(...),
+                explode(',', (string) env('CACHE_FAILOVER_STORES', 'redis,database,file')),
+            ),
         ],
 
     ],

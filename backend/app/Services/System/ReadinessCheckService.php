@@ -18,9 +18,15 @@ final class ReadinessCheckService
 
     public function check(string $version = 'v1'): ReadinessStatusDTO
     {
-        return ReadinessStatusDTO::fromChecks([
+        $checks = [
             'database' => $this->probes->isDatabaseReachable() ? 'ok' : 'fail',
             'cache' => $this->probes->isCacheReachable() ? 'ok' : 'fail',
-        ], $version);
+        ];
+
+        if (config('infrastructure.redis.enabled')) {
+            $checks['redis'] = $this->probes->isRedisReachable() ? 'ok' : 'fail';
+        }
+
+        return ReadinessStatusDTO::fromChecks($checks, $version);
     }
 }

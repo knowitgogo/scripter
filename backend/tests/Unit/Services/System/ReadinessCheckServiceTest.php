@@ -18,6 +18,7 @@ final class ReadinessCheckServiceTest extends TestCase
         $probes = $this->createMock(InfrastructureProbeRepositoryInterface::class);
         $probes->method('isDatabaseReachable')->willReturn(true);
         $probes->method('isCacheReachable')->willReturn(true);
+        $probes->method('isRedisReachable')->willReturn(true);
 
         $status = (new ReadinessCheckService($probes))->check();
 
@@ -39,6 +40,7 @@ final class ReadinessCheckServiceTest extends TestCase
         $probes = $this->createMock(InfrastructureProbeRepositoryInterface::class);
         $probes->method('isDatabaseReachable')->willReturn(false);
         $probes->method('isCacheReachable')->willReturn(true);
+        $probes->method('isRedisReachable')->willReturn(true);
 
         $status = (new ReadinessCheckService($probes))->check();
 
@@ -52,10 +54,27 @@ final class ReadinessCheckServiceTest extends TestCase
         $probes = $this->createMock(InfrastructureProbeRepositoryInterface::class);
         $probes->method('isDatabaseReachable')->willReturn(true);
         $probes->method('isCacheReachable')->willReturn(false);
+        $probes->method('isRedisReachable')->willReturn(true);
 
         $status = (new ReadinessCheckService($probes))->check();
 
         $this->assertFalse($status->isReady());
         $this->assertSame('fail', $status->checks['cache']);
+    }
+
+    #[Test]
+    public function it_includes_redis_check_when_redis_is_enabled(): void
+    {
+        config(['infrastructure.redis.enabled' => true]);
+
+        $probes = $this->createMock(InfrastructureProbeRepositoryInterface::class);
+        $probes->method('isDatabaseReachable')->willReturn(true);
+        $probes->method('isCacheReachable')->willReturn(true);
+        $probes->method('isRedisReachable')->willReturn(false);
+
+        $status = (new ReadinessCheckService($probes))->check();
+
+        $this->assertFalse($status->isReady());
+        $this->assertSame('fail', $status->checks['redis']);
     }
 }

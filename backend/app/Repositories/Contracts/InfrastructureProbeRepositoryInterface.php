@@ -12,4 +12,6 @@ interface InfrastructureProbeRepositoryInterface extends RepositoryInterface
     public function isDatabaseReachable(): bool;
 
     public function isCacheReachable(): bool;
+
+    public function isRedisReachable(): bool;
 }
