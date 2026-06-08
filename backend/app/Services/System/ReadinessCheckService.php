@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\System;
+
+use App\DTOs\System\ReadinessStatusDTO;
+use App\Repositories\Contracts\InfrastructureProbeRepositoryInterface;
+
+/**
+ * Readiness check — verifies infrastructure dependencies are available.
+ */
+final class ReadinessCheckService
+{
+    public function __construct(
+        private readonly InfrastructureProbeRepositoryInterface $probes,
+    ) {}
+
+    public function check(string $version = 'v1'): ReadinessStatusDTO
+    {
+        return ReadinessStatusDTO::fromChecks([
+            'database' => $this->probes->isDatabaseReachable() ? 'ok' : 'fail',
+            'cache' => $this->probes->isCacheReachable() ? 'ok' : 'fail',
+        ], $version);
+    }
+}

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\InfrastructureProbeRepositoryInterface;
+use App\Repositories\Infrastructure\InfrastructureProbeRepository;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -17,7 +19,9 @@ class RepositoryServiceProvider extends ServiceProvider
     /**
      * @var array<class-string, class-string>
      */
-    public array $bindings = [];
+    public array $bindings = [
+        InfrastructureProbeRepositoryInterface::class => InfrastructureProbeRepository::class,
+    ];
 
     public function register(): void
     {

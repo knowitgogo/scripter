@@ -68,7 +68,8 @@ All endpoints are under `/api/v1`. Routes are defined in `routes/api.php`.
 
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/v1/health` | Infrastructure health check |
+| `GET /api/v1/health` | Liveness probe — process is running |
+| `GET /api/v1/ready` | Readiness probe — database and cache are reachable |
 | `GET /up` | Laravel health probe |
 
 ## Exception handling

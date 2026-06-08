@@ -35,6 +35,13 @@ final class OpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_defines_readiness_endpoint(): void
+    {
+        $this->assertStringContainsString('/ready:', $this->specContents);
+        $this->assertStringContainsString('operationId: readinessCheck', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_defines_api_envelope_schema(): void
     {
         $this->assertStringContainsString('ApiEnvelope:', $this->specContents);

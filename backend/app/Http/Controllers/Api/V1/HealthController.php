@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Support\ApiResponse;
+use App\Services\System\HealthCheckService;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Infrastructure health endpoint. No domain Services involved.
+ * Liveness probe — confirms the API process is running.
  */
 final class HealthController extends BaseController
 {
-    public function __invoke(): JsonResponse
+    public function __invoke(HealthCheckService $service): JsonResponse
     {
-        return $this->respondSuccess([
-            'status' => 'ok',
-            'version' => 'v1',
-        ]);
+        return $this->respondSuccess($service->check());
     }
 }

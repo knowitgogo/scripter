@@ -17,11 +17,11 @@ paths:
       operationId: healthCheck
       tags:
         - System
-      summary: API health check
-      description: Returns service health and API version. No authentication required.
+      summary: API liveness check
+      description: Returns liveness status confirming the API process is running. No authentication required.
       responses:
         '200':
-          description: Service is healthy
+          description: Service is alive
           content:
             application/json:
               schema:
@@ -30,17 +30,7 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: object
-                        required:
-                          - status
-                          - version
-                        properties:
-                          status:
-                            type: string
-                            example: ok
-                          version:
-                            type: string
-                            example: v1
+                        $ref: '#/components/schemas/HealthStatus'
         '422':
           description: Validation error
           content:
@@ -71,6 +61,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
+  /ready:
+    get:
+      operationId: readinessCheck
+      tags:
+        - System
+      summary: API readiness check
+      description: |
+        Verifies infrastructure dependencies (database, cache) are available.
+        Returns HTTP 503 when the service is not ready to accept traffic.
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ReadinessStatus'
+        '503':
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ReadinessStatus'
 components:
   schemas:
     ApiEnvelope:
@@ -111,3 +133,44 @@ components:
       format: uuid
       description: Public entity identifier
       example: 550e8400-e29b-41d4-a716-446655440000
+    HealthStatus:
+      type: object
+      required:
+        - status
+        - version
+      properties:
+        status:
+          type: string
+          enum: [ok]
+          example: ok
+        version:
+          type: string
+          example: v1
+    ReadinessStatus:
+      type: object
+      required:
+        - status
+        - checks
+        - version
+      properties:
+        status:
+          type: string
+          enum: [ready, not_ready]
+          example: ready
+        checks:
+          type: object
+          required:
+            - database
+            - cache
+          properties:
+            database:
+              type: string
+              enum: [ok, fail]
+              example: ok
+            cache:
+              type: string
+              enum: [ok, fail]
+              example: ok
+        version:
+          type: string
+          example: v1
