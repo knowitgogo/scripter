@@ -1,0 +1,76 @@
+openapi: 3.1.0
+info:
+  title: Script Manager API
+  description: Widget Marketplace Platform API (v1)
+  version: 1.0.0
+  contact:
+    name: Script Manager
+servers:
+  - url: /api/v1
+    description: API v1 base path
+tags:
+  - name: System
+    description: Infrastructure endpoints
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      tags:
+        - System
+      summary: API health check
+      description: Returns service health and API version. No authentication required.
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - status
+                          - version
+                        properties:
+                          status:
+                            type: string
+                            example: ok
+                          version:
+                            type: string
+                            example: v1
+components:
+  schemas:
+    ApiEnvelope:
+      type: object
+      required:
+        - success
+        - data
+        - message
+        - errors
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          description: Response payload
+        message:
+          type: string
+          nullable: true
+          example: null
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
+    ApiErrorEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/ApiEnvelope'
+        - type: object
+          properties:
+            success:
+              type: boolean
+              example: false
