@@ -40,6 +40,36 @@ HTTP Request
 - API responses use `App\Support\ApiResponse` envelope via `BaseController` helpers.
 - Repository bindings go in `app/Providers/RepositoryServiceProvider.php`.
 
+## Repository pattern
+
+Persistence repositories follow a contract-first hierarchy:
+
+```
+RepositoryInterface                    # root marker
+└── EloquentRepositoryInterface        # CRUD by internal id
+    └── UuidRepositoryInterface        # + findByUuid / findByUuidOrFail
+```
+
+| Class | Use for |
+|-------|---------|
+| `EloquentRepository` | Internal-id aggregates |
+| `UuidEloquentRepository` | Public entities extending `PublicEntity` |
+| `FindsByUuid` | Used internally by `UuidEloquentRepository` |
+
+**Domain repository example:**
+
+```php
+final class WebsiteRepository extends UuidEloquentRepository implements WebsiteRepositoryInterface
+{
+    protected function model(): string
+    {
+        return Website::class;
+    }
+}
+```
+
+Bind the domain interface in `RepositoryServiceProvider`. Services receive the contract, map Models to DTOs, and never expose integer `id` values.
+
 ## Directory layout
 
 ```

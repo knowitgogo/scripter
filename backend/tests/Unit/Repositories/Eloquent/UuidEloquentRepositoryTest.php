@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Repositories\Concerns;
+namespace Tests\Unit\Repositories\Eloquent;
 
 use App\Models\PublicEntity;
-use App\Repositories\Concerns\FindsByUuid;
+use App\Repositories\Contracts\EloquentRepositoryInterface;
 use App\Repositories\Contracts\UuidRepositoryInterface;
-use App\Repositories\Eloquent\EloquentRepository;
+use App\Repositories\Eloquent\UuidEloquentRepository;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
-final class FindsByUuidTest extends TestCase
+final class UuidEloquentRepositoryTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -23,7 +23,7 @@ final class FindsByUuidTest extends TestCase
     {
         parent::setUp();
 
-        Schema::create('repository_uuid_test_entities', function (Blueprint $table): void {
+        Schema::create('uuid_eloquent_repository_test_entities', function (Blueprint $table): void {
             $table->id();
             $table->publicUuid();
             $table->string('name');
@@ -32,10 +32,19 @@ final class FindsByUuidTest extends TestCase
     }
 
     #[Test]
+    public function it_implements_uuid_and_eloquent_repository_contracts(): void
+    {
+        $repository = new UuidEloquentRepositoryTestEntityRepository;
+
+        $this->assertInstanceOf(UuidRepositoryInterface::class, $repository);
+        $this->assertInstanceOf(EloquentRepositoryInterface::class, $repository);
+    }
+
+    #[Test]
     public function it_finds_entity_by_uuid(): void
     {
-        $entity = RepositoryUuidTestEntity::query()->create(['name' => 'Test']);
-        $repository = new RepositoryUuidTestEntityRepository;
+        $entity = UuidEloquentRepositoryTestEntity::query()->create(['name' => 'Test']);
+        $repository = new UuidEloquentRepositoryTestEntityRepository;
 
         $found = $repository->findByUuid($entity->uuid);
 
@@ -45,7 +54,7 @@ final class FindsByUuidTest extends TestCase
     #[Test]
     public function it_returns_null_for_invalid_uuid(): void
     {
-        $repository = new RepositoryUuidTestEntityRepository;
+        $repository = new UuidEloquentRepositoryTestEntityRepository;
 
         $this->assertNull($repository->findByUuid('invalid'));
     }
@@ -53,7 +62,7 @@ final class FindsByUuidTest extends TestCase
     #[Test]
     public function find_by_uuid_or_fail_throws_when_not_found(): void
     {
-        $repository = new RepositoryUuidTestEntityRepository;
+        $repository = new UuidEloquentRepositoryTestEntityRepository;
 
         $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
 
@@ -64,12 +73,12 @@ final class FindsByUuidTest extends TestCase
 /**
  * @internal
  */
-final class RepositoryUuidTestEntity extends PublicEntity
+final class UuidEloquentRepositoryTestEntity extends PublicEntity
 {
     /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory> */
     use HasFactory;
 
-    protected $table = 'repository_uuid_test_entities';
+    protected $table = 'uuid_eloquent_repository_test_entities';
 
     protected $fillable = ['name'];
 }
@@ -77,12 +86,10 @@ final class RepositoryUuidTestEntity extends PublicEntity
 /**
  * @internal
  */
-final class RepositoryUuidTestEntityRepository extends EloquentRepository implements UuidRepositoryInterface
+final class UuidEloquentRepositoryTestEntityRepository extends UuidEloquentRepository
 {
-    use FindsByUuid;
-
     protected function model(): string
     {
-        return RepositoryUuidTestEntity::class;
+        return UuidEloquentRepositoryTestEntity::class;
     }
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories\Contracts;
 
 /**
- * Marker contract for repository implementations.
+ * Root marker for repository implementations.
  *
- * Domain repositories extend this interface with aggregate-specific methods.
+ * Domain persistence repositories extend {@see EloquentRepositoryInterface}
+ * or {@see UuidRepositoryInterface}. Infrastructure repositories (cache,
+ * queue, probes) extend this interface directly.
  */
 interface RepositoryInterface
 {

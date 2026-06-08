@@ -7,9 +7,11 @@ namespace App\Repositories\Contracts;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Repository contract for aggregates addressed by public UUID.
+ * Repository contract for public entities addressed by UUID.
+ *
+ * @extends EloquentRepositoryInterface
  */
-interface UuidRepositoryInterface extends RepositoryInterface
+interface UuidRepositoryInterface extends EloquentRepositoryInterface
 {
     public function findByUuid(string $uuid): ?Model;
 
