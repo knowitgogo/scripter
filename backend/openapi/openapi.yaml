@@ -106,3 +106,8 @@ components:
               example: false
     ApiNoContent:
       description: Empty response body for 204 No Content
+    Uuid:
+      type: string
+      format: uuid
+      description: Public entity identifier
+      example: 550e8400-e29b-41d4-a716-446655440000

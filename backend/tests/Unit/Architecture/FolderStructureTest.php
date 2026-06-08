@@ -83,6 +83,12 @@ final class FolderStructureTest extends TestCase
             'Http/Controllers/Api/V1/BaseController.php',
             'Http/Requests/ApiRequest.php',
             'Models/Concerns/HasUuid.php',
+            'Models/Concerns/HidesInternalId.php',
+            'Models/PublicEntity.php',
+            'Repositories/Contracts/UuidRepositoryInterface.php',
+            'Repositories/Concerns/FindsByUuid.php',
+            'Rules/ValidUuid.php',
+            'Support/Database/BlueprintMacros.php',
             'Exceptions/DomainException.php',
             'Providers/RepositoryServiceProvider.php',
         ];

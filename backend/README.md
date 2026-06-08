@@ -36,7 +36,7 @@ HTTP Request
 
 - Controllers contain no business logic.
 - Services never return Eloquent models; use DTOs.
-- Public identifiers are UUIDs (`app/Models/Concerns/HasUuid.php`).
+- Public identifiers are UUIDs — see [UUID strategy](#uuid-strategy) below.
 - API responses use `App\Support\ApiResponse` envelope via `BaseController` helpers.
 - Repository bindings go in `app/Providers/RepositoryServiceProvider.php`.
 
@@ -118,6 +118,55 @@ Controllers extend `App\Http\Controllers\Api\V1\BaseController` and return via:
 - `respondError($message, $errors, $status)`
 
 `$data` accepts arrays or DTOs (`DataTransferObject` / `Arrayable`).
+
+## UUID strategy
+
+Public entities are identified by UUID in routes, DTOs, and API responses. Internal integer `id` values are never exposed.
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| Config | `config/uuids.php` | Registry of public entity tables |
+| Generator | `app/Support/UuidGenerator.php` | Centralized UUID creation and validation |
+| Model trait | `app/Models/Concerns/HasUuid.php` | Auto-assign, immutable, route binding |
+| Model trait | `app/Models/Concerns/HidesInternalId.php` | Hide integer `id` from serialization |
+| Base model | `app/Models/PublicEntity.php` | Extend for new domain models |
+| Migration macro | `$table->publicUuid()` | Unique UUID column in migrations |
+| Repository | `FindsByUuid` concern | Lookup by public identifier |
+| Validation | `App\Rules\ValidUuid` | Form Request validation |
+
+**Public entities:** users, websites, widgets, widget_versions, website_widgets, plans, subscriptions, payments, audit_logs.
+
+**Excluded:** widget_keys (credential-based), analytics_events (high volume).
+
+**Usage in migrations:**
+
+```php
+Schema::create('websites', function (Blueprint $table): void {
+    $table->id();
+    $table->publicUuid();
+    // ...
+});
+```
+
+**Usage in repositories:**
+
+```php
+final class WebsiteRepository extends EloquentRepository implements UuidRepositoryInterface
+{
+    use FindsByUuid;
+
+    protected function model(): string
+    {
+        return Website::class;
+    }
+}
+```
+
+**Usage in Form Requests:**
+
+```php
+'website_uuid' => ['required', new ValidUuid],
+```
 
 ## OpenAPI
 
