@@ -10,11 +10,11 @@ use Illuminate\Http\JsonResponse;
 /**
  * Infrastructure health endpoint. No domain Services involved.
  */
-final class HealthController extends Controller
+final class HealthController extends BaseController
 {
     public function __invoke(): JsonResponse
     {
-        return ApiResponse::success([
+        return $this->respondSuccess([
             'status' => 'ok',
             'version' => 'v1',
         ]);

@@ -80,6 +80,7 @@ final class FolderStructureTest extends TestCase
             'Http/Middleware/ForceJsonResponse.php',
             'Repositories/Contracts/RepositoryInterface.php',
             'Repositories/Eloquent/EloquentRepository.php',
+            'Http/Controllers/Api/V1/BaseController.php',
             'Http/Requests/ApiRequest.php',
             'Models/Concerns/HasUuid.php',
             'Exceptions/DomainException.php',

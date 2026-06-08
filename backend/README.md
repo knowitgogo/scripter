@@ -37,7 +37,7 @@ HTTP Request
 - Controllers contain no business logic.
 - Services never return Eloquent models; use DTOs.
 - Public identifiers are UUIDs (`app/Models/Concerns/HasUuid.php`).
-- API responses use `App\Support\ApiResponse` envelope.
+- API responses use `App\Support\ApiResponse` envelope via `BaseController` helpers.
 - Repository bindings go in `app/Providers/RepositoryServiceProvider.php`.
 
 ## Directory layout
@@ -55,7 +55,7 @@ app/
 ├── Support/
 ├── Exceptions/
 └── Http/
-    ├── Controllers/Api/V1/
+    ├── Controllers/Api/V1/   # BaseController + domain controllers
     ├── Requests/{Auth,Website,Widget,Analytics,Billing,Admin}/
     └── Resources/
 openapi/openapi.yaml
@@ -87,6 +87,37 @@ All API errors return the standard envelope (`success`, `data`, `message`, `erro
 | Unhandled | 500 | Generic message; `X-Trace-Id` header logged |
 
 Implementation: `app/Support/ApiExceptionRenderer.php`, registered in `bootstrap/app.php`.
+
+## ApiResponse standard
+
+All successful and error responses use the envelope defined in `app/Support/ApiResponse.php`:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": null,
+  "errors": []
+}
+```
+
+| Method | HTTP | Use case |
+|--------|------|----------|
+| `ApiResponse::success()` | 200 | Standard success |
+| `ApiResponse::created()` | 201 | Resource created |
+| `ApiResponse::accepted()` | 202 | Async job accepted |
+| `ApiResponse::noContent()` | 204 | Delete / no body |
+| `ApiResponse::error()` | 4xx/5xx | Failures |
+
+Controllers extend `App\Http\Controllers\Api\V1\BaseController` and return via:
+
+- `respondSuccess($data, $message)`
+- `respondCreated($data, $message)`
+- `respondAccepted($data, $message)`
+- `respondNoContent()`
+- `respondError($message, $errors, $status)`
+
+`$data` accepts arrays or DTOs (`DataTransferObject` / `Arrayable`).
 
 ## OpenAPI
 

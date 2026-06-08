@@ -104,3 +104,5 @@ components:
             success:
               type: boolean
               example: false
+    ApiNoContent:
+      description: Empty response body for 204 No Content
