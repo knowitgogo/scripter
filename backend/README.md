@@ -70,6 +70,8 @@ All endpoints are under `/api/v1`. Routes are defined in `routes/api.php`.
 |----------|-------------|
 | `GET /api/v1/health` | Liveness probe — process is running |
 | `GET /api/v1/ready` | Readiness probe — database and cache are reachable |
+| `GET /api/openapi.yaml` | Raw OpenAPI 3.1 specification (YAML) |
+| `GET /api/docs` | Swagger UI documentation browser |
 | `GET /up` | Laravel health probe |
 
 ## Exception handling
@@ -197,6 +199,15 @@ php artisan queue:work --queue=default,analytics,billing --tries=3
 ## OpenAPI
 
 The contract lives at `openapi/openapi.yaml`. Extend this file as endpoints are added. Contract tests in `tests/Contract/` validate the spec artifact.
+
+| Route | Description |
+|-------|-------------|
+| `GET /api/openapi.yaml` | Serves the YAML specification |
+| `GET /api/docs` | Swagger UI browser (disable with `OPENAPI_UI_ENABLED=false`) |
+
+Configuration: `config/openapi.php`. Services load the spec via `OpenApiSpecService` and `OpenApiSpecRepositoryInterface`.
+
+**Workflow:** update `openapi/openapi.yaml` → verify with `php artisan test --filter=OpenApi` → browse `/api/docs`.
 
 ## Setup
 

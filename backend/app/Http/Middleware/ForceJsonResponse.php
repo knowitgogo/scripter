@@ -18,8 +18,20 @@ final class ForceJsonResponse
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (! $this->shouldForceJson($request)) {
+            return $next($request);
+        }
+
         $request->headers->set('Accept', 'application/json');
 
         return $next($request);
+    }
+
+    private function shouldForceJson(Request $request): bool
+    {
+        $specRoute = 'api/'.ltrim((string) config('openapi.routes.spec'), '/');
+        $uiRoute = 'api/'.ltrim((string) config('openapi.routes.ui'), '/');
+
+        return ! $request->is($specRoute, $uiRoute, $uiRoute.'/*');
     }
 }

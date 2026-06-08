@@ -93,6 +93,40 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/ReadinessStatus'
+  /openapi.yaml:
+    get:
+      operationId: openApiSpec
+      tags:
+        - System
+      summary: OpenAPI specification
+      description: Returns the raw OpenAPI 3.1 YAML contract for this API.
+      responses:
+        '200':
+          description: OpenAPI specification document
+          content:
+            application/yaml:
+              schema:
+                type: string
+  /docs:
+    get:
+      operationId: swaggerUi
+      tags:
+        - System
+      summary: Swagger UI
+      description: Interactive API documentation browser.
+      responses:
+        '200':
+          description: Swagger UI HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+        '404':
+          description: Documentation UI disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
 components:
   schemas:
     ApiEnvelope:

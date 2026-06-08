@@ -42,6 +42,14 @@ final class OpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_defines_documentation_routes(): void
+    {
+        $this->assertStringContainsString('/openapi.yaml:', $this->specContents);
+        $this->assertStringContainsString('/docs:', $this->specContents);
+        $this->assertStringContainsString('operationId: swaggerUi', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_defines_api_envelope_schema(): void
     {
         $this->assertStringContainsString('ApiEnvelope:', $this->specContents);
