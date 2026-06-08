@@ -1,6 +1,13 @@
 # Script Manager — Backend API
 
-Laravel 13 API for the Widget Marketplace Platform. See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full system design.
+Laravel 13 **API-only** application for the Widget Marketplace Platform. See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full system design.
+
+## API-only configuration
+
+- Web routing is disabled; all HTTP endpoints live under `/api/v1`.
+- `ForceJsonResponse` middleware forces JSON negotiation on API routes.
+- `prefersJsonResponses()` ensures JSON error pages for `/up` and broad Accept headers.
+- All exceptions on API routes render the standard envelope via `ApiExceptionRenderer`.
 
 ## Layer conventions
 
@@ -63,6 +70,23 @@ All endpoints are under `/api/v1`. Routes are defined in `routes/api.php`.
 |----------|-------------|
 | `GET /api/v1/health` | Infrastructure health check |
 | `GET /up` | Laravel health probe |
+
+## Exception handling
+
+All API errors return the standard envelope (`success`, `data`, `message`, `errors`):
+
+| Exception | HTTP | Message |
+|-----------|------|---------|
+| `ValidationException` | 422 | Validation message; `errors` populated |
+| `AuthenticationException` | 401 | Unauthenticated. |
+| `AuthorizationException` | 403 | Forbidden. |
+| `ModelNotFoundException` | 404 | Resource not found. |
+| `NotFoundHttpException` | 404 | Resource not found. |
+| `MethodNotAllowedHttpException` | 405 | Method not allowed. |
+| `DomainException` | configurable | Business rule message |
+| Unhandled | 500 | Generic message; `X-Trace-Id` header logged |
+
+Implementation: `app/Support/ApiExceptionRenderer.php`, registered in `bootstrap/app.php`.
 
 ## OpenAPI
 
