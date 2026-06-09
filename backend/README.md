@@ -259,6 +259,44 @@ final class WebsiteRepository extends EloquentRepository implements UuidReposito
 'website_uuid' => ['required', new ValidUuid],
 ```
 
+## Audit event architecture
+
+Audit logging is event-driven and decoupled from domain Services.
+
+```
+Domain Service
+  → AuditDispatcher::dispatch(AuditEventInterface)
+  → RecordAuditLog listener (thin)
+  → AuditLogService
+  → PersistAuditLogJob (async) or AuditLogRepository (sync)
+  → audit_logs table
+```
+
+| Component | Location | Role |
+|-----------|----------|------|
+| Events | `app/Events/Audit/` | Immutable audit events |
+| DTO | `app/DTOs/Audit/AuditLogEntryDTO.php` | Persistence payload |
+| Service | `app/Services/Audit/AuditLogService.php` | Record orchestration |
+| Dispatcher | `app/Services/Audit/AuditDispatcher.php` | Event bus entry point |
+| Listener | `app/Listeners/RecordAuditLog.php` | Thin delegation |
+| Job | `app/Jobs/PersistAuditLogJob.php` | Async persistence |
+| Repository | `AuditLogRepositoryInterface` | Database access |
+
+**Usage from a domain Service (future modules):**
+
+```php
+$this->auditDispatcher->dispatch(
+    GenericAuditEvent::record(
+        action: AuditAction::Created,
+        subjectType: 'website',
+        subjectUuid: $websiteDto->uuid,
+        actorUuid: $actorUuid,
+    ),
+);
+```
+
+Configuration: `config/audit.php` (`AUDIT_ENABLED`, `AUDIT_ASYNC`).
+
 ## Redis, cache, and queues
 
 Infrastructure settings live in `config/infrastructure.php`. Defaults use **database** cache and **database** queues per ADR; Redis is opt-in via `REDIS_ENABLED=true`.
