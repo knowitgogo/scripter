@@ -14,8 +14,10 @@ use App\Repositories\Contracts\PermissionsRepositoryInterface;
 use App\Repositories\Contracts\QueueDispatcherInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Contracts\WebsiteRepositoryInterface;
 use App\Repositories\Eloquent\EloquentRoleRepository;
 use App\Repositories\Eloquent\EloquentUserRepository;
+use App\Repositories\Eloquent\EloquentWebsiteRepository;
 use App\Repositories\Infrastructure\InfrastructureProbeRepository;
 use App\Repositories\OpenApi\FileOpenApiSpecRepository;
 use App\Repositories\Permissions\ConfigPermissionsRepository;
@@ -38,6 +40,7 @@ class RepositoryServiceProvider extends ServiceProvider
         AuditLogRepositoryInterface::class => EloquentAuditLogRepository::class,
         UserRepositoryInterface::class => EloquentUserRepository::class,
         RoleRepositoryInterface::class => EloquentRoleRepository::class,
+        WebsiteRepositoryInterface::class => EloquentWebsiteRepository::class,
         PermissionsRepositoryInterface::class => ConfigPermissionsRepository::class,
     ];
 

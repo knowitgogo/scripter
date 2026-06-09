@@ -481,14 +481,19 @@ users (uuid) ← websites.user_id (internal FK, hidden from API)
 | Model | `app/Models/Website.php` extends `PublicEntity` |
 | Status enum | `app/Enums/WebsiteStatus.php` (`active`, `inactive`, `suspended`) |
 | Factory | `database/factories/WebsiteFactory.php` |
+| Repository | `WebsiteRepositoryInterface` → `EloquentWebsiteRepository` |
 
 **Table:** `websites` — `uuid`, `user_id`, `name`, `url` (unique), `status`, timestamps.
 
 **Relationships:** `Website` `belongsTo` `User`; `User` `hasMany` `Website`.
 
-**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`.
+**Repository methods:** `findByUuid`, `findByUrl`, `listForUser`, `findByUuidForUser`, plus standard CRUD from `EloquentRepositoryInterface`.
 
-HTTP endpoints (`GET/POST /websites`) and `WebsiteRepository` are planned in subsequent tasks.
+Bind `WebsiteRepositoryInterface` in `RepositoryServiceProvider`. Services map `Website` models to DTOs before returning to controllers.
+
+**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`.
+
+HTTP endpoints (`GET/POST /websites`) are planned in subsequent tasks.
 
 ## Permissions architecture
 

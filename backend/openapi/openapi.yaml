@@ -20,8 +20,9 @@ tags:
       when the user lacks the required permission.
   - name: Websites
     description: |
-      Customer-owned websites (persistence model in place; HTTP endpoints planned).
-      Each website belongs to a user and is identified by a public UUID.
+      Customer-owned websites (persistence model and repository in place; HTTP endpoints planned).
+      Each website belongs to a user and is identified by a public UUID. Data access uses
+      `WebsiteRepositoryInterface` (`findByUuid`, `findByUrl`, `listForUser`, `findByUuidForUser`).
   - name: System
     description: Infrastructure endpoints
 paths:
