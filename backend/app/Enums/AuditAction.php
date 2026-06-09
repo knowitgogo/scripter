@@ -14,6 +14,7 @@ enum AuditAction: string
     case Deleted = 'deleted';
     case Restored = 'restored';
     case Authenticated = 'authenticated';
+    case LoggedOut = 'logged_out';
     case Authorized = 'authorized';
     case Suspended = 'suspended';
     case Impersonated = 'impersonated';

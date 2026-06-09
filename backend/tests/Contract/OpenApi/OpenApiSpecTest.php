@@ -36,6 +36,14 @@ final class OpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_defines_logout_endpoint(): void
+    {
+        $this->assertStringContainsString('/auth/logout:', $this->specContents);
+        $this->assertStringContainsString('operationId: logout', $this->specContents);
+        $this->assertStringContainsString('LogoutResult:', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_defines_health_endpoint(): void
     {
         $this->assertStringContainsString('/health:', $this->specContents);

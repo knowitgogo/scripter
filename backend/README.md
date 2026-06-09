@@ -125,6 +125,7 @@ All versioned responses include the `X-API-Version` header via `SetApiVersionHea
 | Endpoint | Description |
 |----------|-------------|
 | `POST /api/v1/auth/login` | Authenticate with email/password; returns JWT |
+| `POST /api/v1/auth/logout` | Invalidate current JWT (requires Bearer token) |
 | `GET /api/v1/health` | Liveness probe — process is running |
 | `GET /api/v1/ready` | Readiness probe — database and cache are reachable |
 | `GET /api/openapi.yaml` | Raw OpenAPI 3.1 specification (YAML) |
@@ -388,6 +389,25 @@ LoginRequest → LoginDTO → LoginService → UserRepository + JWT guard → Au
 **Rules:** only `active` users may log in; invalid credentials return 401; suspended/pending accounts return 403; successful logins update `last_login_at` and record an audit event.
 
 **Tests:** `tests/Feature/Api/V1/Auth/LoginEndpointTest.php`, `tests/Unit/Services/Auth/LoginServiceTest.php`.
+
+## Logout endpoint
+
+`POST /api/v1/auth/logout` invalidates the caller's JWT (blacklist) and returns `LogoutResultDTO`.
+
+```
+LogoutRequest → LogoutService → JWT guard logout + audit → LogoutResultDTO
+```
+
+| Component | Location |
+|-----------|----------|
+| Controller | `app/Http/Controllers/Api/V1/Auth/LogoutController.php` |
+| Form Request | `app/Http/Requests/Auth/LogoutRequest.php` |
+| DTO | `app/DTOs/Auth/LogoutResultDTO.php` |
+| Service | `app/Services/Auth/LogoutService.php` |
+
+**Auth:** `auth:api` middleware required. Blacklisted tokens cannot be reused.
+
+**Tests:** `tests/Feature/Api/V1/Auth/LogoutEndpointTest.php`, `tests/Unit/Services/Auth/LogoutServiceTest.php`.
 
 ## Role assignment service
 
