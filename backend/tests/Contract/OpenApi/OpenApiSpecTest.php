@@ -56,4 +56,11 @@ final class OpenApiSpecTest extends TestCase
         $this->assertStringContainsString('success:', $this->specContents);
         $this->assertStringContainsString('errors:', $this->specContents);
     }
+
+    #[Test]
+    public function openapi_spec_defines_role_schema(): void
+    {
+        $this->assertStringContainsString('Role:', $this->specContents);
+        $this->assertStringContainsString('enum: [customer, admin, super_admin]', $this->specContents);
+    }
 }

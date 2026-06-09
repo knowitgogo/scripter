@@ -173,6 +173,29 @@ components:
       format: uuid
       description: Public entity identifier
       example: 550e8400-e29b-41d4-a716-446655440000
+    Role:
+      type: object
+      description: Authorization role (reference data; embedded in user responses and JWT claims)
+      required:
+        - uuid
+        - name
+        - slug
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+          example: Customer
+        slug:
+          type: string
+          enum: [customer, admin, super_admin]
+          example: customer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     HealthStatus:
       type: object
       required:

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\RoleSlug;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -25,5 +26,15 @@ final class Role extends PublicEntity
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'slug' => RoleSlug::class,
+        ];
     }
 }

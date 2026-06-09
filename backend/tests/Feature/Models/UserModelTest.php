@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Models;
 
+use App\Enums\RoleSlug;
 use App\Enums\UserStatus;
 use App\Models\Role;
 use App\Models\User;
@@ -76,7 +77,7 @@ final class UserModelTest extends TestCase
     {
         $user = User::factory()->admin()->create();
 
-        $this->assertSame('admin', $user->role->slug);
+        $this->assertSame(RoleSlug::Admin, $user->role->slug);
     }
 
     #[Test]

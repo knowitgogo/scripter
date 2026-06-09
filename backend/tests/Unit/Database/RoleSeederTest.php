@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Database;
 
+use App\Enums\RoleSlug;
 use App\Models\Role;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,9 +20,24 @@ final class RoleSeederTest extends TestCase
     {
         (new RoleSeeder)->run();
 
-        $this->assertDatabaseHas('roles', ['slug' => 'customer', 'name' => 'Customer']);
-        $this->assertDatabaseHas('roles', ['slug' => 'admin', 'name' => 'Admin']);
-        $this->assertDatabaseHas('roles', ['slug' => 'super_admin', 'name' => 'Super Admin']);
+        foreach (RoleSlug::seedOrder() as $slug) {
+            $this->assertDatabaseHas('roles', [
+                'slug' => $slug->value,
+                'name' => $slug->label(),
+            ]);
+        }
+
+        $this->assertSame(3, Role::query()->count());
+    }
+
+    #[Test]
+    public function it_is_idempotent(): void
+    {
+        $seeder = new RoleSeeder;
+
+        $seeder->run();
+        $seeder->run();
+
         $this->assertSame(3, Role::query()->count());
     }
 }

@@ -322,6 +322,24 @@ Infrastructure settings live in `config/infrastructure.php`. Defaults use **data
 php artisan queue:work --queue=default,analytics,billing --tries=3
 ```
 
+## Roles domain model
+
+The `roles` table defines authorization roles referenced by `users.role_id` and JWT claims.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | bigint | Internal primary key (hidden from API) |
+| `uuid` | uuid | Public identifier |
+| `name` | string | Display name (e.g. `Customer`) |
+| `slug` | string | Canonical slug (`RoleSlug` enum): `customer`, `admin`, `super_admin` |
+| `timestamps` | — | `created_at`, `updated_at` |
+
+**Seeder:** `RoleSeeder` seeds all `RoleSlug` values idempotently via `firstOrCreate`.
+
+**Factory:** `RoleFactory` with states `customer()`, `admin()`, `superAdmin()`.
+
+**Tests:** `tests/Feature/Models/RoleModelTest.php`, `tests/Unit/Database/RoleSeederTest.php`, `tests/Unit/Database/RolesMigrationTest.php`, `tests/Unit/Enums/RoleSlugTest.php`.
+
 ## Users domain model
 
 The `users` table stores platform accounts. Migrations are additive on the Laravel default schema.
@@ -338,7 +356,7 @@ The `users` table stores platform accounts. Migrations are additive on the Larav
 | `last_login_at` | timestamp | Nullable last successful login |
 | `timestamps` | — | `created_at`, `updated_at` |
 
-**Related tables:** `roles` (`customer`, `admin`, `super_admin` seeded via `RoleSeeder`).
+**Related tables:** `roles` — see [Roles domain model](#roles-domain-model).
 
 **Factories:** `UserFactory` (default customer role; states: `admin()`, `suspended()`, `pending()`, `unverified()`, `withLastLogin()`), `RoleFactory`.
 

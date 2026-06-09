@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\RoleSlug;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -31,24 +32,24 @@ class RoleFactory extends Factory
     public function customer(): static
     {
         return $this->state(fn (): array => [
-            'name' => 'Customer',
-            'slug' => 'customer',
+            'name' => RoleSlug::Customer->label(),
+            'slug' => RoleSlug::Customer,
         ]);
     }
 
     public function admin(): static
     {
         return $this->state(fn (): array => [
-            'name' => 'Admin',
-            'slug' => 'admin',
+            'name' => RoleSlug::Admin->label(),
+            'slug' => RoleSlug::Admin,
         ]);
     }
 
     public function superAdmin(): static
     {
         return $this->state(fn (): array => [
-            'name' => 'Super Admin',
-            'slug' => 'super_admin',
+            'name' => RoleSlug::SuperAdmin->label(),
+            'slug' => RoleSlug::SuperAdmin,
         ]);
     }
 }
