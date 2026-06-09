@@ -15,6 +15,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
 
 /**
@@ -44,6 +45,13 @@ final class ApiExceptionRenderer
         }
 
         if ($exception instanceof AuthenticationException) {
+            return ApiResponse::error(
+                message: $exception->getMessage() ?: 'Unauthenticated.',
+                status: 401,
+            );
+        }
+
+        if ($exception instanceof UnauthorizedHttpException) {
             return ApiResponse::error(
                 message: $exception->getMessage() ?: 'Unauthenticated.',
                 status: 401,

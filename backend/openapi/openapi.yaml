@@ -134,6 +134,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token issued by POST /auth/login (future)
   schemas:
     ApiEnvelope:
       type: object
@@ -241,6 +247,25 @@ components:
           type: string
           enum: [customer, admin, super_admin]
           example: admin
+    AuthToken:
+      type: object
+      description: JWT access token response
+      required:
+        - access_token
+        - token_type
+        - expires_in
+      properties:
+        access_token:
+          type: string
+          description: Signed JWT access token
+        token_type:
+          type: string
+          enum: [bearer]
+          example: bearer
+        expires_in:
+          type: integer
+          description: Access token lifetime in seconds
+          example: 3600
     HealthStatus:
       type: object
       required:

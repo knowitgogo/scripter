@@ -112,6 +112,8 @@ final class FolderStructureTest extends TestCase
             'Rules/ValidUuid.php',
             'Support/Database/BlueprintMacros.php',
             'Exceptions/DomainException.php',
+            'Support/Auth/JwtClaimBuilder.php',
+            'DTOs/Auth/AuthTokenDTO.php',
             'Enums/AuditAction.php',
             'Events/Audit/AbstractAuditEvent.php',
             'Events/Audit/GenericAuditEvent.php',

@@ -36,5 +36,10 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="AUTH_GUARD" value="api"/>
+        <env name="JWT_SECRET" value="testing-jwt-secret-key-for-phpunit-suite"/>
+        <env name="JWT_TTL" value="60"/>
+        <env name="JWT_REFRESH_TTL" value="20160"/>
+        <env name="JWT_BLACKLIST_ENABLED" value="true"/>
     </php>
 </phpunit>

@@ -70,4 +70,12 @@ final class OpenApiSpecTest extends TestCase
         $this->assertStringContainsString('User:', $this->specContents);
         $this->assertStringContainsString('AssignRoleRequest:', $this->specContents);
     }
+
+    #[Test]
+    public function openapi_spec_defines_jwt_security_and_auth_token_schema(): void
+    {
+        $this->assertStringContainsString('bearerAuth:', $this->specContents);
+        $this->assertStringContainsString('bearerFormat: JWT', $this->specContents);
+        $this->assertStringContainsString('AuthToken:', $this->specContents);
+    }
 }

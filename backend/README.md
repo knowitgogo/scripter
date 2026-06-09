@@ -340,6 +340,35 @@ The `roles` table defines authorization roles referenced by `users.role_id` and 
 
 **Tests:** `tests/Feature/Models/RoleModelTest.php`, `tests/Unit/Database/RoleSeederTest.php`, `tests/Unit/Database/RolesMigrationTest.php`, `tests/Unit/Enums/RoleSlugTest.php`.
 
+## JWT authentication
+
+JWT is provided by [`php-open-source-saver/jwt-auth`](https://github.com/PHP-Open-Source-Saver/jwt-auth) (v2.9+). Access and refresh lifetimes are config-driven.
+
+| Setting | Env | Default | Purpose |
+|---------|-----|---------|---------|
+| Guard | `AUTH_GUARD` | `api` | Default auth guard |
+| Secret | `JWT_SECRET` | — | HMAC signing key (`php artisan jwt:secret`) |
+| Access TTL | `JWT_TTL` | `60` | Access token lifetime (minutes) |
+| Refresh window | `JWT_REFRESH_TTL` | `20160` | Refresh window (minutes, 14 days) |
+| Algorithm | `JWT_ALGO` | `HS256` | Signing algorithm |
+| Blacklist | `JWT_BLACKLIST_ENABLED` | `true` | Invalidate tokens on logout |
+
+**Setup:**
+
+```bash
+composer install
+php artisan jwt:secret   # writes JWT_SECRET to .env
+```
+
+**Architecture:**
+
+- `User` implements `JWTSubject`; `sub` claim is the public `uuid` (never internal `id`)
+- Custom `role` claim via `App\Support\Auth\JwtClaimBuilder`
+- `AuthTokenDTO` is the token response shape for future `LoginService` / `TokenRefreshService`
+- Protect routes with `auth:api` or `jwt.auth` middleware
+
+**Tests:** `tests/Feature/Auth/JwtAuthenticationTest.php`, `tests/Unit/Config/JwtConfigTest.php`, `tests/Unit/Auth/JwtClaimBuilderTest.php`, `tests/Unit/Models/UserJwtSubjectTest.php`.
+
 ## Role assignment service
 
 `RoleAssignmentService` (`app/Services/Auth/RoleAssignmentService.php`) assigns a `RoleSlug` to a user identified by UUID.
@@ -405,6 +434,7 @@ Configuration: `config/openapi.php`. Services load the spec via `OpenApiSpecServ
 composer install
 cp .env.example .env   # if needed
 php artisan key:generate
+php artisan jwt:secret
 php artisan migrate
 ```
 
