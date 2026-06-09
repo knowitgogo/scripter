@@ -17,11 +17,13 @@ use App\Repositories\Contracts\TagRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\WebsiteRepositoryInterface;
 use App\Repositories\Contracts\WebsiteTagRepositoryInterface;
+use App\Repositories\Contracts\WidgetRepositoryInterface;
 use App\Repositories\Eloquent\EloquentRoleRepository;
 use App\Repositories\Eloquent\EloquentTagRepository;
 use App\Repositories\Eloquent\EloquentUserRepository;
 use App\Repositories\Eloquent\EloquentWebsiteRepository;
 use App\Repositories\Eloquent\EloquentWebsiteTagRepository;
+use App\Repositories\Eloquent\EloquentWidgetRepository;
 use App\Repositories\Infrastructure\InfrastructureProbeRepository;
 use App\Repositories\OpenApi\FileOpenApiSpecRepository;
 use App\Repositories\Permissions\ConfigPermissionsRepository;
@@ -47,6 +49,7 @@ class RepositoryServiceProvider extends ServiceProvider
         WebsiteRepositoryInterface::class => EloquentWebsiteRepository::class,
         TagRepositoryInterface::class => EloquentTagRepository::class,
         WebsiteTagRepositoryInterface::class => EloquentWebsiteTagRepository::class,
+        WidgetRepositoryInterface::class => EloquentWidgetRepository::class,
         PermissionsRepositoryInterface::class => ConfigPermissionsRepository::class,
     ];
 

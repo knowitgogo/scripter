@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Enums\WidgetStatus;
+use Database\Factories\WidgetFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+/**
+ * Marketplace catalog widget discoverable by customers.
+ */
+#[Fillable(['name', 'slug', 'description', 'status'])]
+final class Widget extends PublicEntity
+{
+    /** @use HasFactory<WidgetFactory> */
+    use HasFactory;
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => WidgetStatus::class,
+        ];
+    }
+
+    protected static function newFactory(): WidgetFactory
+    {
+        return WidgetFactory::new();
+    }
+}

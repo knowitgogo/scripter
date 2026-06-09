@@ -304,6 +304,34 @@ final class FolderStructureTest extends TestCase
     }
 
     #[Test]
+    public function widget_domain_files_exist(): void
+    {
+        $app = dirname(__DIR__, 3).'/app';
+        $tests = dirname(__DIR__, 3).'/tests';
+
+        $files = [
+            $app.'/Enums/WidgetStatus.php',
+            $app.'/Models/Widget.php',
+            $app.'/Repositories/Contracts/WidgetRepositoryInterface.php',
+            $app.'/Repositories/Eloquent/EloquentWidgetRepository.php',
+            $app.'/DTOs/Widget/WidgetDTO.php',
+            $app.'/Services/Widget/WidgetCatalogService.php',
+            dirname(__DIR__, 3).'/database/factories/WidgetFactory.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_09_180000_create_widgets_table.php',
+            $tests.'/Unit/Database/WidgetsMigrationTest.php',
+            $tests.'/Unit/Enums/WidgetStatusTest.php',
+            $tests.'/Feature/Models/WidgetModelTest.php',
+            $tests.'/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php',
+            $tests.'/Unit/DTOs/Widget/WidgetDTOTest.php',
+            $tests.'/Unit/Services/Widget/WidgetCatalogServiceTest.php',
+        ];
+
+        foreach ($files as $file) {
+            $this->assertFileExists($file);
+        }
+    }
+
+    #[Test]
     public function authentication_test_suite_files_exist(): void
     {
         $base = dirname(__DIR__, 3).'/tests';

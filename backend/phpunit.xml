@@ -52,6 +52,15 @@
             <file>tests/Unit/Repositories/Eloquent/EloquentTagRepositoryTest.php</file>
             <file>tests/Concerns/InteractsWithTags.php</file>
         </testsuite>
+        <testsuite name="Widget">
+            <directory>tests/Unit/Services/Widget</directory>
+            <directory>tests/Unit/DTOs/Widget</directory>
+            <file>tests/Unit/Database/WidgetsMigrationTest.php</file>
+            <file>tests/Unit/Enums/WidgetStatusTest.php</file>
+            <file>tests/Feature/Models/WidgetModelTest.php</file>
+            <file>tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php</file>
+            <file>tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php</file>
+        </testsuite>
     </testsuites>
     <source>
         <include>

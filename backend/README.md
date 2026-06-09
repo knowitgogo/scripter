@@ -597,6 +597,46 @@ TagService::sync(websiteUuid, SyncWebsiteTagsDTO, user) → WebsiteTagsDTO
 
 OpenAPI paths and schemas: `openapi/openapi.yaml` (`/tags`, `/tags/{tag}`, `Tag`, `CreateTagRequest`, `UpdateTagRequest`).
 
+## Widgets domain
+
+Marketplace catalog widgets are persisted as public UUID entities with lifecycle status.
+
+| Component | Location |
+|-----------|----------|
+| Migration | `database/migrations/2026_06_09_180000_create_widgets_table.php` |
+| Model | `app/Models/Widget.php` extends `PublicEntity` |
+| Status enum | `app/Enums/WidgetStatus.php` (`draft`, `published`, `deprecated`) |
+| Factory | `database/factories/WidgetFactory.php` |
+| Repository | `WidgetRepositoryInterface` → `EloquentWidgetRepository` |
+| DTO | `app/DTOs/Widget/WidgetDTO.php` |
+| Service | `app/Services/Widget/WidgetCatalogService.php` |
+
+**Table:** `widgets` — `uuid`, `name`, `slug` (unique), `description`, `status`, timestamps.
+
+**Repository methods:** `findBySlug`, `listPublishedOrderedByName`, `listByStatus`, plus UUID lookups from `UuidRepositoryInterface`.
+
+Bind `WidgetRepositoryInterface` in `RepositoryServiceProvider`. `WidgetCatalogService` maps `Widget` models to `WidgetDTO`.
+
+```
+WidgetCatalogService::listPublished() → list<WidgetDTO>
+WidgetCatalogService::getByUuid(uuid) → WidgetDTO
+WidgetCatalogService::getBySlug(slug) → WidgetDTO
+```
+
+**Tests:** Run the Widget suite with `composer test:widget`.
+
+| Layer | Path |
+|-------|------|
+| OpenAPI contract | `tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php` |
+| Service | `tests/Unit/Services/Widget/WidgetCatalogServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php` |
+| Model / migration | `tests/Feature/Models/WidgetModelTest.php`, `tests/Unit/Database/WidgetsMigrationTest.php` |
+
+OpenAPI schema: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`; HTTP catalog endpoints planned separately).
+
+See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
+
 ## Permissions architecture
 
 Role-based permissions are config-driven and resolved through `PermissionService`.
