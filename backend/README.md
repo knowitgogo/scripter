@@ -518,7 +518,20 @@ User + website uuid → WebsiteService::delete()
 | PUT | `/websites/{uuid}` | `websites.manage` |
 | DELETE | `/websites/{uuid}` | `websites.manage` |
 
-**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`, `tests/Unit/DTOs/Website/WebsiteDTOTest.php`, `tests/Unit/DTOs/Website/CreateWebsiteDTOTest.php`, `tests/Unit/Services/Website/WebsiteServiceTest.php`, `tests/Feature/Api/V1/Website/WebsiteCrudEndpointTest.php`.
+**Tests:** Run the Website suite with `composer test:website`.
+
+| Layer | Path |
+|-------|------|
+| CRUD flow | `tests/Feature/Website/WebsiteCrudFlowTest.php` |
+| Endpoints | `tests/Feature/Api/V1/Website/*EndpointTest.php` |
+| Authorization | `tests/Feature/Api/V1/Website/WebsiteAuthorizationEndpointTest.php` |
+| OpenAPI contract | `tests/Contract/OpenApi/WebsiteOpenApiSpecTest.php` |
+| Service | `tests/Unit/Services/Website/WebsiteServiceTest.php` |
+| DTOs | `tests/Unit/DTOs/Website/` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php` |
+| Model / migration | `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Database/WebsitesMigrationTest.php` |
+
+OpenAPI paths and schemas: `openapi/openapi.yaml` (`/websites`, `/websites/{website}`).
 
 ## Permissions architecture
 

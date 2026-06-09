@@ -238,6 +238,12 @@ paths:
       responses:
         '200':
           description: Website collection
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
           content:
             application/json:
               schema:
@@ -278,6 +284,12 @@ paths:
       responses:
         '201':
           description: Website created
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
           content:
             application/json:
               schema:
@@ -323,6 +335,12 @@ paths:
       responses:
         '200':
           description: Website details
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
           content:
             application/json:
               schema:
@@ -373,6 +391,12 @@ paths:
       responses:
         '200':
           description: Website updated
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
           content:
             application/json:
               schema:
@@ -423,6 +447,12 @@ paths:
       responses:
         '204':
           description: Website deleted
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
         '401':
           description: Unauthenticated
           content:

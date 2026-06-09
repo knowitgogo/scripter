@@ -200,8 +200,17 @@ final class FolderStructureTest extends TestCase
             $tests.'/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php',
             $tests.'/Unit/DTOs/Website/WebsiteDTOTest.php',
             $tests.'/Unit/DTOs/Website/CreateWebsiteDTOTest.php',
+            $tests.'/Unit/DTOs/Website/UpdateWebsiteDTOTest.php',
+            $tests.'/Concerns/InteractsWithWebsites.php',
             $tests.'/Unit/Services/Website/WebsiteServiceTest.php',
-            $tests.'/Feature/Api/V1/Website/WebsiteCrudEndpointTest.php',
+            $tests.'/Feature/Website/WebsiteCrudFlowTest.php',
+            $tests.'/Feature/Api/V1/Website/ListWebsitesEndpointTest.php',
+            $tests.'/Feature/Api/V1/Website/StoreWebsiteEndpointTest.php',
+            $tests.'/Feature/Api/V1/Website/ShowWebsiteEndpointTest.php',
+            $tests.'/Feature/Api/V1/Website/UpdateWebsiteEndpointTest.php',
+            $tests.'/Feature/Api/V1/Website/DestroyWebsiteEndpointTest.php',
+            $tests.'/Feature/Api/V1/Website/WebsiteAuthorizationEndpointTest.php',
+            $tests.'/Contract/OpenApi/WebsiteOpenApiSpecTest.php',
         ];
 
         foreach ($files as $file) {

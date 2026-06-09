@@ -23,6 +23,17 @@
             <file>tests/Unit/Config/JwtConfigTest.php</file>
             <file>tests/Unit/Models/UserJwtSubjectTest.php</file>
         </testsuite>
+        <testsuite name="Website">
+            <directory>tests/Feature/Website</directory>
+            <directory>tests/Feature/Api/V1/Website</directory>
+            <directory>tests/Unit/Services/Website</directory>
+            <directory>tests/Unit/DTOs/Website</directory>
+            <file>tests/Contract/OpenApi/WebsiteOpenApiSpecTest.php</file>
+            <file>tests/Unit/Database/WebsitesMigrationTest.php</file>
+            <file>tests/Unit/Enums/WebsiteStatusTest.php</file>
+            <file>tests/Feature/Models/WebsiteModelTest.php</file>
+            <file>tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php</file>
+        </testsuite>
     </testsuites>
     <source>
         <include>
