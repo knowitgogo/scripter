@@ -467,6 +467,47 @@ CurrentUserRequest → CurrentUserService → UserRepository → UserDTO
 
 **Tests:** `tests/Feature/Api/V1/Auth/MeEndpointTest.php`, `tests/Unit/Services/Auth/CurrentUserServiceTest.php`.
 
+## Permissions architecture
+
+Role-based permissions are config-driven and resolved through `PermissionService`.
+
+```
+User.role → PermissionsRepository → PermissionService (cache) → UserPermissionsDTO / Gate
+```
+
+| Component | Location |
+|-----------|----------|
+| Permission enum | `app/Enums/Permission.php` |
+| Role map | `config/permissions.php` |
+| Repository | `PermissionsRepositoryInterface` → `ConfigPermissionsRepository` |
+| Service | `app/Services/Auth/PermissionService.php` |
+| DTO | `app/DTOs/Auth/UserPermissionsDTO.php` |
+| Policies | `app/Policies/BasePolicy.php` + `ChecksPermissions` trait |
+| Middleware | `permission:{slug}` → `EnsurePermission` |
+| Gates | Registered in `AuthorizationServiceProvider` |
+
+**Cache:** resolved sets use `user:permissions:{user_uuid}` (invalidated by `RoleAssignmentService`).
+
+**Usage in policies:**
+
+```php
+final class WebsitePolicy extends BasePolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return $this->allows($user, Permission::WebsitesView);
+    }
+}
+```
+
+**Usage on routes:**
+
+```php
+Route::get('admin/users', ...)->middleware(['auth:api', 'permission:admin.users.view']);
+```
+
+**Tests:** `tests/Unit/Services/Auth/PermissionServiceTest.php`, `tests/Feature/Auth/AuthorizationGateTest.php`, `tests/Feature/Auth/EnsurePermissionMiddlewareTest.php`.
+
 ## Role assignment service
 
 `RoleAssignmentService` (`app/Services/Auth/RoleAssignmentService.php`) assigns a `RoleSlug` to a user identified by UUID.

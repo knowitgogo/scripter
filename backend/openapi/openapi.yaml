@@ -450,6 +450,41 @@ components:
           type: string
           enum: [customer, admin, super_admin]
           example: admin
+    Permission:
+      type: string
+      description: Canonical permission identifier granted by role
+      enum:
+        - websites.view
+        - websites.manage
+        - widgets.view
+        - widgets.install
+        - analytics.view
+        - billing.view
+        - admin.users.view
+        - admin.users.manage
+        - admin.websites.manage
+        - admin.widgets.publish
+        - admin.analytics.view
+        - admin.billing.manage
+        - admin.roles.assign
+        - admin.system.manage
+    UserPermissions:
+      type: object
+      description: Resolved permission set for an authenticated user (reference schema)
+      required:
+        - user_uuid
+        - role
+        - permissions
+      properties:
+        user_uuid:
+          $ref: '#/components/schemas/Uuid'
+        role:
+          type: string
+          enum: [customer, admin, super_admin]
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
     RegisterRequest:
       type: object
       description: New customer registration payload

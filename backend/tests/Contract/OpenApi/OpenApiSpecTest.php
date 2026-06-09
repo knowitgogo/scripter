@@ -110,6 +110,14 @@ final class OpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_defines_permission_schemas(): void
+    {
+        $this->assertStringContainsString('Permission:', $this->specContents);
+        $this->assertStringContainsString('UserPermissions:', $this->specContents);
+        $this->assertStringContainsString('admin.roles.assign', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_defines_jwt_security_and_auth_token_schema(): void
     {
         $this->assertStringContainsString('bearerAuth:', $this->specContents);
