@@ -28,6 +28,14 @@ final class OpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_defines_register_endpoint(): void
+    {
+        $this->assertStringContainsString('/auth/register:', $this->specContents);
+        $this->assertStringContainsString('operationId: register', $this->specContents);
+        $this->assertStringContainsString('RegisterRequest:', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_defines_login_endpoint(): void
     {
         $this->assertStringContainsString('/auth/login:', $this->specContents);

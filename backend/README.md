@@ -124,6 +124,7 @@ All versioned responses include the `X-API-Version` header via `SetApiVersionHea
 
 | Endpoint | Description |
 |----------|-------------|
+| `POST /api/v1/auth/register` | Register customer account; returns JWT |
 | `POST /api/v1/auth/login` | Authenticate with email/password; returns JWT |
 | `POST /api/v1/auth/refresh` | Issue new JWT within refresh window (requires Bearer token) |
 | `POST /api/v1/auth/logout` | Invalidate current JWT (requires Bearer token) |
@@ -372,6 +373,25 @@ php artisan jwt:secret   # writes JWT_SECRET to .env
 - Protect routes with `auth:api` or `jwt.auth` middleware
 
 **Tests:** `tests/Feature/Auth/JwtAuthenticationTest.php`, `tests/Unit/Config/JwtConfigTest.php`, `tests/Unit/Auth/JwtClaimBuilderTest.php`, `tests/Unit/Models/UserJwtSubjectTest.php`.
+
+## Registration endpoint
+
+`POST /api/v1/auth/register` creates a customer account and returns `AuthTokenDTO`.
+
+```
+RegisterRequest → RegisterDTO → RegisterService → UserRepository + RoleRepository → AuthTokenDTO
+```
+
+| Component | Location |
+|-----------|----------|
+| Controller | `app/Http/Controllers/Api/V1/Auth/RegisterController.php` |
+| Form Request | `app/Http/Requests/Auth/RegisterRequest.php` |
+| DTO | `app/DTOs/Auth/RegisterDTO.php` |
+| Service | `app/Services/Auth/RegisterService.php` |
+
+**Validation:** `name`, unique `email`, `password` (min 8, confirmed). New users receive the `customer` role and `active` status.
+
+**Tests:** `tests/Feature/Api/V1/Auth/RegisterEndpointTest.php`, `tests/Unit/Services/Auth/RegisterServiceTest.php`.
 
 ## Login endpoint
 

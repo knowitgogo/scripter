@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\MeController;
 use App\Http\Controllers\Api\V1\Auth\RefreshTokenController;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('auth/register', RegisterController::class)->name('auth.register');
 Route::post('auth/login', LoginController::class)->name('auth.login');
 Route::post('auth/refresh', RefreshTokenController::class)->name('auth.refresh');
 Route::post('auth/logout', LogoutController::class)->middleware('auth:api')->name('auth.logout');

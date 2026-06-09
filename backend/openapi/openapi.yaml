@@ -14,6 +14,45 @@ tags:
   - name: System
     description: Infrastructure endpoints
 paths:
+  /auth/register:
+    post:
+      operationId: register
+      tags:
+        - Auth
+      summary: Register customer account
+      description: |
+        Creates a new customer account with the default `customer` role and
+        returns a JWT access token. Email must be unique.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registration successful
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthToken'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /auth/login:
     post:
       operationId: login
@@ -411,6 +450,33 @@ components:
           type: string
           enum: [customer, admin, super_admin]
           example: admin
+    RegisterRequest:
+      type: object
+      description: New customer registration payload
+      required:
+        - name
+        - email
+        - password
+        - password_confirmation
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          example: jane@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+        password_confirmation:
+          type: string
+          format: password
+          example: password123
     LoginRequest:
       type: object
       description: Login credentials
