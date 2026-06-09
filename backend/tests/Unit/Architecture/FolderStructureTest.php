@@ -55,6 +55,9 @@ final class FolderStructureTest extends TestCase
             'tests/Unit',
             'tests/Feature',
             'tests/Contract',
+            'tests/Concerns',
+            'tests/Feature/Auth',
+            'tests/Feature/Api/V1/Auth',
         ];
 
         $cases = [];
@@ -146,6 +149,23 @@ final class FolderStructureTest extends TestCase
             'Models/AuditLog.php',
             'Providers/EventServiceProvider.php',
             'Providers/RepositoryServiceProvider.php',
+        ];
+
+        foreach ($files as $file) {
+            $this->assertFileExists($base.'/'.$file);
+        }
+    }
+
+    #[Test]
+    public function authentication_test_suite_files_exist(): void
+    {
+        $base = dirname(__DIR__, 3).'/tests';
+
+        $files = [
+            'Concerns/InteractsWithAuthentication.php',
+            'Feature/Auth/AuthenticationFlowTest.php',
+            'Feature/Auth/AuthenticationGuardTest.php',
+            'Unit/Auth/AuthenticationHelpersTest.php',
         ];
 
         foreach ($files as $file) {

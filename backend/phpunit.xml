@@ -14,6 +14,15 @@
         <testsuite name="Contract">
             <directory>tests/Contract</directory>
         </testsuite>
+        <testsuite name="Auth">
+            <directory>tests/Feature/Auth</directory>
+            <directory>tests/Feature/Api/V1/Auth</directory>
+            <directory>tests/Unit/Services/Auth</directory>
+            <directory>tests/Unit/Auth</directory>
+            <directory>tests/Unit/DTOs/Auth</directory>
+            <file>tests/Unit/Config/JwtConfigTest.php</file>
+            <file>tests/Unit/Models/UserJwtSubjectTest.php</file>
+        </testsuite>
     </testsuites>
     <source>
         <include>

@@ -549,6 +549,17 @@ php artisan test
 | Unit | `tests/Unit/` | Support classes, DTOs, architecture |
 | Feature | `tests/Feature/` | HTTP integration |
 | Contract | `tests/Contract/` | OpenAPI spec validation |
+| Auth | `tests/Feature/Auth/`, `tests/Feature/Api/V1/Auth/`, `tests/Unit/Services/Auth/`, etc. | JWT authentication domain |
+
+**Run auth suite only:**
+
+```bash
+composer test:auth
+# or
+php artisan test --testsuite=Auth
+```
+
+**Auth test helpers:** `tests/Concerns/InteractsWithAuthentication.php` provides role seeding, JWT bearer helpers, and API envelope assertions. Integration flows live in `tests/Feature/Auth/AuthenticationFlowTest.php` and `tests/Feature/Auth/AuthenticationGuardTest.php`.
 
 ## Adding a new domain module
 
