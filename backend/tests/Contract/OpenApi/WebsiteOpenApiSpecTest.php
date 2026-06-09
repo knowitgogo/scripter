@@ -44,7 +44,15 @@ final class WebsiteOpenApiSpecTest extends TestCase
         $this->assertStringContainsString('Website:', $this->specContents);
         $this->assertStringContainsString('CreateWebsiteRequest:', $this->specContents);
         $this->assertStringContainsString('UpdateWebsiteRequest:', $this->specContents);
+        $this->assertStringContainsString('ListWebsitesQuery:', $this->specContents);
         $this->assertStringContainsString('WebsiteStatus:', $this->specContents);
+    }
+
+    #[Test]
+    public function openapi_spec_documents_website_list_tag_filter(): void
+    {
+        $this->assertStringContainsString('tag_uuids', $this->specContents);
+        $this->assertStringContainsString('Filter by tag UUIDs', $this->specContents);
     }
 
     #[Test]

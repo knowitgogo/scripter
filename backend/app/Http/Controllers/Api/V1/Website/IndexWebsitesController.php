@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Website;
 
+use App\DTOs\Website\ListWebsitesQueryDTO;
 use App\DTOs\Website\WebsiteDTO;
 use App\Http\Controllers\Api\V1\BaseController;
 use App\Http\Requests\Website\ListWebsitesRequest;
@@ -24,7 +25,7 @@ final class IndexWebsitesController extends BaseController
         return $this->respondSuccess(
             array_map(
                 fn (WebsiteDTO $website): array => $website->toArray(),
-                $service->listForUser($user),
+                $service->listForUser($user, ListWebsitesQueryDTO::fromRequest($request)),
             ),
         );
     }

@@ -237,9 +237,23 @@ paths:
       tags:
         - Websites
       summary: List owned websites
-      description: Returns websites owned by the authenticated user, ordered by name.
+      description: |
+        Returns websites owned by the authenticated user, ordered by name.
+        Optionally filter by tag UUIDs; when multiple tags are provided, only websites
+        tagged with all listed tags are returned.
       security:
         - bearerAuth: []
+      parameters:
+        - name: tag_uuids
+          in: query
+          description: Filter by tag UUIDs (AND semantics when multiple values are provided)
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Uuid'
+          style: form
+          explode: true
       responses:
         '200':
           description: Website collection
@@ -268,6 +282,12 @@ paths:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
         '403':
           description: Missing websites.view permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
           content:
             application/json:
               schema:
@@ -1001,6 +1021,17 @@ components:
           maxLength: 100
           pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
           example: marketing
+    ListWebsitesQuery:
+      type: object
+      description: Query parameters for listing websites (`ListWebsitesQueryDTO`)
+      properties:
+        tag_uuids:
+          type: array
+          description: When non-empty, only websites tagged with all listed tags are returned
+          items:
+            $ref: '#/components/schemas/Uuid'
+          example:
+            - 660e8400-e29b-41d4-a716-446655440001
     CreateWebsiteRequest:
       type: object
       description: Payload for creating a website (`CreateWebsiteDTO`)

@@ -7,12 +7,13 @@ namespace Tests\Feature\Api\V1\Website;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Concerns\InteractsWithAuthentication;
+use Tests\Concerns\InteractsWithTags;
 use Tests\Concerns\InteractsWithWebsites;
 use Tests\TestCase;
 
 final class ListWebsitesEndpointTest extends TestCase
 {
-    use InteractsWithAuthentication, InteractsWithWebsites, RefreshDatabase;
+    use InteractsWithAuthentication, InteractsWithTags, InteractsWithWebsites, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -53,5 +54,39 @@ final class ListWebsitesEndpointTest extends TestCase
 
         $this->assertSuccessfulApiEnvelope($response);
         $response->assertJsonCount(0, 'data');
+    }
+
+    #[Test]
+    public function list_endpoint_filters_websites_by_tag_uuid(): void
+    {
+        $user = $this->createAuthUser();
+        $marketing = $this->createTagFor($user, ['slug' => 'marketing-filter']);
+        $taggedWebsite = $this->createWebsiteFor($user, ['name' => 'Tagged Site']);
+        $this->createWebsiteFor($user, ['name' => 'Untagged Site']);
+        $taggedWebsite->tags()->attach($marketing);
+
+        $response = $this->actingAsJwt($user)->getJson('/api/v1/websites?'.http_build_query([
+            'tag_uuids' => [$marketing->uuid],
+        ]));
+
+        $this->assertSuccessfulApiEnvelope($response);
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonPath('data.0.name', 'Tagged Site');
+    }
+
+    #[Test]
+    public function list_endpoint_requires_existing_tag_uuids(): void
+    {
+        $user = $this->createAuthUser();
+
+        $this->actingAsJwt($user)
+            ->getJson('/api/v1/websites?'.http_build_query([
+                'tag_uuids' => ['00000000-0000-0000-0000-000000000000'],
+            ]))
+            ->assertUnprocessable()
+            ->assertJson([
+                'success' => false,
+                'message' => 'Validation failed.',
+            ]);
     }
 }

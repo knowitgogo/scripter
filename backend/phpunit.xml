@@ -27,7 +27,7 @@
             <directory>tests/Feature/Website</directory>
             <directory>tests/Feature/Api/V1/Website</directory>
             <directory>tests/Unit/Services/Website</directory>
-            <directory>tests/Unit/DTOs/Website</directory>
+            <file>tests/Unit/DTOs/Website/ListWebsitesQueryDTOTest.php</file>
             <file>tests/Contract/OpenApi/WebsiteOpenApiSpecTest.php</file>
             <file>tests/Unit/Database/WebsitesMigrationTest.php</file>
             <file>tests/Unit/Enums/WebsiteStatusTest.php</file>

@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\Website;
 
 use App\DTOs\Website\CreateWebsiteDTO;
+use App\DTOs\Website\ListWebsitesQueryDTO;
 use App\DTOs\Website\UpdateWebsiteDTO;
 use App\Enums\AuditAction;
 use App\Enums\WebsiteStatus;
 use App\Exceptions\DomainException;
 use App\Models\Role;
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\Website;
+use App\Repositories\Eloquent\EloquentTagRepository;
 use App\Repositories\Eloquent\EloquentWebsiteRepository;
 use App\Services\Audit\AuditDispatcher;
 use App\Services\Website\WebsiteService;
@@ -37,6 +40,7 @@ final class WebsiteServiceTest extends TestCase
 
         $this->service = new WebsiteService(
             new EloquentWebsiteRepository,
+            new EloquentTagRepository,
             app(AuditDispatcher::class),
         );
     }
@@ -123,6 +127,42 @@ final class WebsiteServiceTest extends TestCase
         $this->assertSame('Alpha Site', $websites[0]->name);
         $this->assertSame('Beta Site', $websites[1]->name);
         $this->assertArrayNotHasKey('user_id', $websites[0]->toArray());
+    }
+
+    #[Test]
+    public function it_filters_websites_by_single_tag(): void
+    {
+        $user = $this->createUser();
+        $marketing = Tag::factory()->marketing()->create();
+        $taggedWebsite = Website::factory()->create(['user_id' => $user->id, 'name' => 'Tagged Site']);
+        Website::factory()->create(['user_id' => $user->id, 'name' => 'Untagged Site']);
+        $taggedWebsite->tags()->attach($marketing);
+
+        $websites = $this->service->listForUser($user, new ListWebsitesQueryDTO(
+            tag_uuids: [$marketing->uuid],
+        ));
+
+        $this->assertCount(1, $websites);
+        $this->assertSame('Tagged Site', $websites[0]->name);
+    }
+
+    #[Test]
+    public function it_filters_websites_by_multiple_tags_using_and_semantics(): void
+    {
+        $user = $this->createUser();
+        $marketing = Tag::factory()->marketing()->create();
+        $ecommerce = Tag::factory()->ecommerce()->create();
+        $bothTagsWebsite = Website::factory()->create(['user_id' => $user->id, 'name' => 'Both Tags']);
+        $singleTagWebsite = Website::factory()->create(['user_id' => $user->id, 'name' => 'Single Tag']);
+        $bothTagsWebsite->tags()->attach([$marketing->id, $ecommerce->id]);
+        $singleTagWebsite->tags()->attach($marketing);
+
+        $websites = $this->service->listForUser($user, new ListWebsitesQueryDTO(
+            tag_uuids: [$marketing->uuid, $ecommerce->uuid],
+        ));
+
+        $this->assertCount(1, $websites);
+        $this->assertSame('Both Tags', $websites[0]->name);
     }
 
     #[Test]

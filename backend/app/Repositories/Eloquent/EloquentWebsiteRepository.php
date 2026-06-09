@@ -23,14 +23,18 @@ final class EloquentWebsiteRepository extends UuidEloquentRepository implements 
     }
 
     /**
+     * @param  list<int>  $tagIds
      * @return Collection<int, Website>
      */
-    public function listForUser(int $userId): Collection
+    public function listForUser(int $userId, array $tagIds = []): Collection
     {
-        return $this->newModelQuery()
-            ->where('user_id', $userId)
-            ->orderBy('name')
-            ->get();
+        $query = $this->newModelQuery()->where('user_id', $userId);
+
+        foreach ($tagIds as $tagId) {
+            $query->whereHas('tags', fn ($builder) => $builder->where('tags.id', $tagId));
+        }
+
+        return $query->orderBy('name')->get();
     }
 
     public function findByUuidForUser(string $uuid, int $userId): ?Website

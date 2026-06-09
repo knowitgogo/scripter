@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace App\Services\Website;
 
 use App\DTOs\Website\CreateWebsiteDTO;
+use App\DTOs\Website\ListWebsitesQueryDTO;
 use App\DTOs\Website\UpdateWebsiteDTO;
 use App\DTOs\Website\WebsiteDTO;
 use App\Enums\AuditAction;
 use App\Enums\WebsiteStatus;
 use App\Events\Audit\GenericAuditEvent;
 use App\Exceptions\DomainException;
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\Website;
+use App\Repositories\Contracts\TagRepositoryInterface;
 use App\Repositories\Contracts\WebsiteRepositoryInterface;
 use App\Services\Audit\AuditDispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -24,15 +27,18 @@ final class WebsiteService
 {
     public function __construct(
         private readonly WebsiteRepositoryInterface $websites,
+        private readonly TagRepositoryInterface $tags,
         private readonly AuditDispatcher $auditDispatcher,
     ) {}
 
     /**
      * @return list<WebsiteDTO>
      */
-    public function listForUser(User $user): array
+    public function listForUser(User $user, ?ListWebsitesQueryDTO $query = null): array
     {
-        return $this->websites->listForUser($user->id)
+        $query ??= new ListWebsitesQueryDTO;
+
+        return $this->websites->listForUser($user->id, $this->resolveTagIds($query))
             ->map(fn (Website $website): WebsiteDTO => WebsiteDTO::fromModel($website))
             ->values()
             ->all();
@@ -152,5 +158,25 @@ final class WebsiteService
         $existing = $this->websites->findByUrl($url);
 
         return $existing !== null && $existing->uuid !== $websiteUuid;
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function resolveTagIds(ListWebsitesQueryDTO $query): array
+    {
+        if (! $query->hasTagFilter()) {
+            return [];
+        }
+
+        $tagIds = [];
+
+        foreach ($query->tag_uuids as $tagUuid) {
+            /** @var Tag $tag */
+            $tag = $this->tags->findByUuidOrFail($tagUuid);
+            $tagIds[] = $tag->id;
+        }
+
+        return array_values(array_unique($tagIds));
     }
 }

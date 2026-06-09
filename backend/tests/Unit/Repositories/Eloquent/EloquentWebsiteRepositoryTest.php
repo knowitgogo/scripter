@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Repositories\Eloquent;
 
 use App\Models\Role;
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\Website;
 use App\Repositories\Contracts\EloquentRepositoryInterface;
@@ -75,6 +76,28 @@ final class EloquentWebsiteRepositoryTest extends TestCase
         $this->assertCount(2, $websites);
         $this->assertTrue($alpha->is($websites->first()));
         $this->assertTrue($beta->is($websites->last()));
+    }
+
+    #[Test]
+    public function it_filters_websites_for_user_by_tag_ids(): void
+    {
+        $role = Role::factory()->customer()->create();
+        $user = User::factory()->create(['role_id' => $role->id]);
+        $marketing = Tag::factory()->marketing()->create();
+        $ecommerce = Tag::factory()->ecommerce()->create();
+        $taggedWebsite = Website::factory()->create(['user_id' => $user->id, 'name' => 'Tagged Site']);
+        $otherWebsite = Website::factory()->create(['user_id' => $user->id, 'name' => 'Other Site']);
+        $taggedWebsite->tags()->attach($marketing);
+        $otherWebsite->tags()->attach([$marketing, $ecommerce]);
+
+        $repository = new EloquentWebsiteRepository;
+
+        $singleTagResults = $repository->listForUser($user->id, [$marketing->id]);
+        $bothTagResults = $repository->listForUser($user->id, [$marketing->id, $ecommerce->id]);
+
+        $this->assertCount(2, $singleTagResults);
+        $this->assertCount(1, $bothTagResults);
+        $this->assertTrue($otherWebsite->is($bothTagResults->first()));
     }
 
     #[Test]

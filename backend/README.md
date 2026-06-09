@@ -502,7 +502,7 @@ CreateWebsiteDTO + User
   → AuditDispatcher (website.created)
   → WebsiteDTO
 
-User → WebsiteService::listForUser() → list<WebsiteDTO>
+User → WebsiteService::listForUser(user, ListWebsitesQueryDTO?) → list<WebsiteDTO>
 User + website uuid → WebsiteService::getForUser() → WebsiteDTO
 User + website uuid → WebsiteService::update() → WebsiteDTO
 User + website uuid → WebsiteService::delete()
@@ -512,7 +512,7 @@ User + website uuid → WebsiteService::delete()
 
 | Method | Path | Permission |
 |--------|------|------------|
-| GET | `/websites` | `websites.view` |
+| GET | `/websites` | `websites.view` | Optional `tag_uuids[]` query filter (AND semantics) |
 | POST | `/websites` | `websites.manage` |
 | GET | `/websites/{uuid}` | `websites.view` |
 | PUT | `/websites/{uuid}` | `websites.manage` |

@@ -15,9 +15,10 @@ interface WebsiteRepositoryInterface extends UuidRepositoryInterface
     public function findByUrl(string $url): ?Website;
 
     /**
+     * @param  list<int>  $tagIds  When non-empty, only websites tagged with all listed tags are returned.
      * @return Collection<int, Website>
      */
-    public function listForUser(int $userId): Collection;
+    public function listForUser(int $userId, array $tagIds = []): Collection;
 
     public function findByUuidForUser(string $uuid, int $userId): ?Website;
 }
