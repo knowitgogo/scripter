@@ -533,6 +533,49 @@ User + website uuid → WebsiteService::delete()
 
 OpenAPI paths and schemas: `openapi/openapi.yaml` (`/websites`, `/websites/{website}`).
 
+## Tags domain
+
+Reusable labels shared across websites via a many-to-many pivot.
+
+```
+websites ← website_tag → tags (uuid)
+```
+
+| Component | Location |
+|-----------|----------|
+| Migrations | `database/migrations/2026_06_08_170000_create_tags_table.php`, `2026_06_08_170001_create_website_tag_table.php` |
+| Model | `app/Models/Tag.php` extends `PublicEntity` |
+| Factory | `database/factories/TagFactory.php` |
+| Repository | `TagRepositoryInterface` → `EloquentTagRepository` |
+| DTO | `app/DTOs/Tag/TagDTO.php` |
+| Service | `app/Services/Tag/TagService.php` |
+
+**Tables:** `tags` — `uuid`, `name`, `slug` (unique), timestamps. `website_tag` — `website_id`, `tag_id` (unique pair), timestamps.
+
+**Relationships:** `Tag` `belongsToMany` `Website`; `Website` `belongsToMany` `Tag`. The same tag row can be attached to multiple websites.
+
+**Repository methods:** `findBySlug`, `findBySlugOrFail`, `listOrderedByName`, plus UUID lookups from `UuidRepositoryInterface`.
+
+Bind `TagRepositoryInterface` in `RepositoryServiceProvider`. `TagService` maps `Tag` models to `TagDTO`.
+
+```
+TagService::list() → list<TagDTO>
+TagService::getByUuid(uuid) → TagDTO
+TagService::getBySlug(slug) → TagDTO
+```
+
+**Tests:** Run the Tags suite with `composer test:tags`.
+
+| Layer | Path |
+|-------|------|
+| OpenAPI contract | `tests/Contract/OpenApi/TagOpenApiSpecTest.php` |
+| Service | `tests/Unit/Services/Tag/TagServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Tag/TagDTOTest.php` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentTagRepositoryTest.php` |
+| Model / migration | `tests/Feature/Models/TagModelTest.php`, `tests/Unit/Database/TagsMigrationTest.php` |
+
+OpenAPI schema: `openapi/openapi.yaml` (`Tag` component; HTTP endpoints planned separately).
+
 ## Permissions architecture
 
 Role-based permissions are config-driven and resolved through `PermissionService`.

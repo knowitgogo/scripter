@@ -22,6 +22,11 @@ tags:
     description: |
       Customer-owned website CRUD. Read routes require `websites.view`; write routes
       require `websites.manage`. All operations are scoped to the authenticated user.
+  - name: Tags
+    description: |
+      Reusable labels attachable to multiple websites via the `website_tag` pivot.
+      Tag domain services expose `TagDTO`; HTTP endpoints for tag management are planned
+      separately from website CRUD.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -662,6 +667,31 @@ components:
           type: string
           enum: [active, inactive, suspended]
           example: active
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Tag:
+      type: object
+      description: Public tag response (`TagDTO`). Tags are shared across websites.
+      required:
+        - uuid
+        - name
+        - slug
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+          maxLength: 100
+          example: Marketing
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: marketing
         created_at:
           type: string
           format: date-time

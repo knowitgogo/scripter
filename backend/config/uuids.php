@@ -32,6 +32,7 @@ return [
     'entities' => [
         'users',
         'websites',
+        'tags',
         'widgets',
         'widget_versions',
         'website_widgets',

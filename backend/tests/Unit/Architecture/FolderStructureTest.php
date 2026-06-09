@@ -20,11 +20,13 @@ final class FolderStructureTest extends TestCase
         $directories = [
             'app/DTOs/Auth',
             'app/DTOs/Website',
+            'app/DTOs/Tag',
             'app/DTOs/Widget',
             'app/DTOs/Analytics',
             'app/DTOs/Billing',
             'app/Services/Auth',
             'app/Services/Website',
+            'app/Services/Tag',
             'app/Services/Widget',
             'app/Services/Analytics',
             'app/Services/Billing',
@@ -211,6 +213,34 @@ final class FolderStructureTest extends TestCase
             $tests.'/Feature/Api/V1/Website/DestroyWebsiteEndpointTest.php',
             $tests.'/Feature/Api/V1/Website/WebsiteAuthorizationEndpointTest.php',
             $tests.'/Contract/OpenApi/WebsiteOpenApiSpecTest.php',
+        ];
+
+        foreach ($files as $file) {
+            $this->assertFileExists($file);
+        }
+    }
+
+    #[Test]
+    public function tag_domain_files_exist(): void
+    {
+        $app = dirname(__DIR__, 3).'/app';
+        $tests = dirname(__DIR__, 3).'/tests';
+
+        $files = [
+            $app.'/Models/Tag.php',
+            $app.'/Repositories/Contracts/TagRepositoryInterface.php',
+            $app.'/Repositories/Eloquent/EloquentTagRepository.php',
+            $app.'/DTOs/Tag/TagDTO.php',
+            $app.'/Services/Tag/TagService.php',
+            dirname(__DIR__, 3).'/database/factories/TagFactory.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_08_170000_create_tags_table.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_08_170001_create_website_tag_table.php',
+            $tests.'/Unit/Database/TagsMigrationTest.php',
+            $tests.'/Feature/Models/TagModelTest.php',
+            $tests.'/Unit/Repositories/Eloquent/EloquentTagRepositoryTest.php',
+            $tests.'/Unit/DTOs/Tag/TagDTOTest.php',
+            $tests.'/Unit/Services/Tag/TagServiceTest.php',
+            $tests.'/Contract/OpenApi/TagOpenApiSpecTest.php',
         ];
 
         foreach ($files as $file) {

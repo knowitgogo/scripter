@@ -13,9 +13,11 @@ use App\Repositories\Contracts\OpenApiSpecRepositoryInterface;
 use App\Repositories\Contracts\PermissionsRepositoryInterface;
 use App\Repositories\Contracts\QueueDispatcherInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
+use App\Repositories\Contracts\TagRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\WebsiteRepositoryInterface;
 use App\Repositories\Eloquent\EloquentRoleRepository;
+use App\Repositories\Eloquent\EloquentTagRepository;
 use App\Repositories\Eloquent\EloquentUserRepository;
 use App\Repositories\Eloquent\EloquentWebsiteRepository;
 use App\Repositories\Infrastructure\InfrastructureProbeRepository;
@@ -41,6 +43,7 @@ class RepositoryServiceProvider extends ServiceProvider
         UserRepositoryInterface::class => EloquentUserRepository::class,
         RoleRepositoryInterface::class => EloquentRoleRepository::class,
         WebsiteRepositoryInterface::class => EloquentWebsiteRepository::class,
+        TagRepositoryInterface::class => EloquentTagRepository::class,
         PermissionsRepositoryInterface::class => ConfigPermissionsRepository::class,
     ];
 
