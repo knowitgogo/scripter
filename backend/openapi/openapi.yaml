@@ -9,9 +9,63 @@ servers:
   - url: /api/v1
     description: API v1 base path
 tags:
+  - name: Auth
+    description: Authentication endpoints
   - name: System
     description: Infrastructure endpoints
 paths:
+  /auth/login:
+    post:
+      operationId: login
+      tags:
+        - Auth
+      summary: Authenticate user
+      description: |
+        Validates email and password credentials and returns a JWT access token.
+        The token `sub` claim contains the user's public UUID; a `role` claim
+        carries the authorization slug.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /health:
     get:
       operationId: healthCheck
@@ -139,7 +193,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: JWT access token issued by POST /auth/login (future)
+      description: JWT access token issued by POST /auth/login
   schemas:
     ApiEnvelope:
       type: object
@@ -247,6 +301,21 @@ components:
           type: string
           enum: [customer, admin, super_admin]
           example: admin
+    LoginRequest:
+      type: object
+      description: Login credentials
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: password
     AuthToken:
       type: object
       description: JWT access token response

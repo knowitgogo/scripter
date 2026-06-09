@@ -15,6 +15,14 @@ final class EloquentUserRepository extends EloquentRepository implements UserRep
 {
     use FindsByUuid;
 
+    public function findByEmail(string $email): ?User
+    {
+        /** @var User|null $user */
+        $user = $this->newModelQuery()->where('email', $email)->first();
+
+        return $user;
+    }
+
     protected function model(): string
     {
         return User::class;

@@ -39,6 +39,18 @@ final class EloquentUserRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function it_finds_user_by_email(): void
+    {
+        $user = User::factory()->create(['email' => 'find-me@example.com']);
+        $repository = new EloquentUserRepository;
+
+        $found = $repository->findByEmail('find-me@example.com');
+
+        $this->assertTrue($user->is($found));
+        $this->assertNull($repository->findByEmail('missing@example.com'));
+    }
+
+    #[Test]
     public function it_updates_user_role_id(): void
     {
         $user = User::factory()->create();

@@ -124,6 +124,7 @@ All versioned responses include the `X-API-Version` header via `SetApiVersionHea
 
 | Endpoint | Description |
 |----------|-------------|
+| `POST /api/v1/auth/login` | Authenticate with email/password; returns JWT |
 | `GET /api/v1/health` | Liveness probe — process is running |
 | `GET /api/v1/ready` | Readiness probe — database and cache are reachable |
 | `GET /api/openapi.yaml` | Raw OpenAPI 3.1 specification (YAML) |
@@ -364,10 +365,29 @@ php artisan jwt:secret   # writes JWT_SECRET to .env
 
 - `User` implements `JWTSubject`; `sub` claim is the public `uuid` (never internal `id`)
 - Custom `role` claim via `App\Support\Auth\JwtClaimBuilder`
-- `AuthTokenDTO` is the token response shape for future `LoginService` / `TokenRefreshService`
+- `AuthTokenDTO` is the token response shape for `LoginService` / `TokenRefreshService`
 - Protect routes with `auth:api` or `jwt.auth` middleware
 
 **Tests:** `tests/Feature/Auth/JwtAuthenticationTest.php`, `tests/Unit/Config/JwtConfigTest.php`, `tests/Unit/Auth/JwtClaimBuilderTest.php`, `tests/Unit/Models/UserJwtSubjectTest.php`.
+
+## Login endpoint
+
+`POST /api/v1/auth/login` authenticates a user and returns `AuthTokenDTO`.
+
+```
+LoginRequest → LoginDTO → LoginService → UserRepository + JWT guard → AuthTokenDTO
+```
+
+| Component | Location |
+|-----------|----------|
+| Controller | `app/Http/Controllers/Api/V1/Auth/LoginController.php` |
+| Form Request | `app/Http/Requests/Auth/LoginRequest.php` |
+| DTO | `app/DTOs/Auth/LoginDTO.php` |
+| Service | `app/Services/Auth/LoginService.php` |
+
+**Rules:** only `active` users may log in; invalid credentials return 401; suspended/pending accounts return 403; successful logins update `last_login_at` and record an audit event.
+
+**Tests:** `tests/Feature/Api/V1/Auth/LoginEndpointTest.php`, `tests/Unit/Services/Auth/LoginServiceTest.php`.
 
 ## Role assignment service
 
