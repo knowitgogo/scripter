@@ -467,6 +467,29 @@ CurrentUserRequest → CurrentUserService → UserRepository → UserDTO
 
 **Tests:** `tests/Feature/Api/V1/Auth/MeEndpointTest.php`, `tests/Unit/Services/Auth/CurrentUserServiceTest.php`.
 
+## Websites domain
+
+Customer websites are persisted as public UUID entities owned by a user.
+
+```
+users (uuid) ← websites.user_id (internal FK, hidden from API)
+```
+
+| Component | Location |
+|-----------|----------|
+| Migration | `database/migrations/2026_06_08_160000_create_websites_table.php` |
+| Model | `app/Models/Website.php` extends `PublicEntity` |
+| Status enum | `app/Enums/WebsiteStatus.php` (`active`, `inactive`, `suspended`) |
+| Factory | `database/factories/WebsiteFactory.php` |
+
+**Table:** `websites` — `uuid`, `user_id`, `name`, `url` (unique), `status`, timestamps.
+
+**Relationships:** `Website` `belongsTo` `User`; `User` `hasMany` `Website`.
+
+**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`.
+
+HTTP endpoints (`GET/POST /websites`) and `WebsiteRepository` are planned in subsequent tasks.
+
 ## Permissions architecture
 
 Role-based permissions are config-driven and resolved through `PermissionService`.

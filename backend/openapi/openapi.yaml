@@ -18,6 +18,10 @@ tags:
       `Permission` schema; effective grants come from the caller's role
       (`config/permissions.php`). Returns **401** when unauthenticated and **403**
       when the user lacks the required permission.
+  - name: Websites
+    description: |
+      Customer-owned websites (persistence model in place; HTTP endpoints planned).
+      Each website belongs to a user and is identified by a public UUID.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -389,6 +393,41 @@ components:
       format: uuid
       description: Public entity identifier
       example: 550e8400-e29b-41d4-a716-446655440000
+    Website:
+      type: object
+      description: Customer-owned website (reference schema for future endpoints)
+      required:
+        - uuid
+        - name
+        - url
+        - status
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+          maxLength: 255
+          example: Acme Marketing Site
+        url:
+          type: string
+          format: uri
+          maxLength: 2048
+          example: https://www.example.com
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          example: active
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    WebsiteStatus:
+      type: string
+      description: Website lifecycle status
+      enum: [active, inactive, suspended]
+      example: active
     Role:
       type: object
       description: Authorization role (reference data; embedded in user responses and JWT claims)

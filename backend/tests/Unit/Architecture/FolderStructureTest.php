@@ -168,6 +168,27 @@ final class FolderStructureTest extends TestCase
     }
 
     #[Test]
+    public function website_domain_files_exist(): void
+    {
+        $app = dirname(__DIR__, 3).'/app';
+        $tests = dirname(__DIR__, 3).'/tests';
+
+        $files = [
+            $app.'/Enums/WebsiteStatus.php',
+            $app.'/Models/Website.php',
+            dirname(__DIR__, 3).'/database/factories/WebsiteFactory.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_08_160000_create_websites_table.php',
+            $tests.'/Unit/Database/WebsitesMigrationTest.php',
+            $tests.'/Unit/Enums/WebsiteStatusTest.php',
+            $tests.'/Feature/Models/WebsiteModelTest.php',
+        ];
+
+        foreach ($files as $file) {
+            $this->assertFileExists($file);
+        }
+    }
+
+    #[Test]
     public function authentication_test_suite_files_exist(): void
     {
         $base = dirname(__DIR__, 3).'/tests';
