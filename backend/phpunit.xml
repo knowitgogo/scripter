@@ -55,6 +55,9 @@
         <testsuite name="Widget">
             <directory>tests/Unit/Services/Widget</directory>
             <directory>tests/Unit/DTOs/Widget</directory>
+            <directory>tests/Feature/Widget</directory>
+            <directory>tests/Feature/Api/V1/Widget</directory>
+            <file>tests/Concerns/InteractsWithWidgets.php</file>
             <file>tests/Unit/Database/WidgetsMigrationTest.php</file>
             <file>tests/Unit/Database/WidgetVersionsMigrationTest.php</file>
             <file>tests/Unit/Enums/WidgetStatusTest.php</file>

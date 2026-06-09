@@ -805,6 +805,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
+    post:
+      operationId: registerWidget
+      tags:
+        - Widgets
+      summary: Register widget
+      description: |
+        Registers a new widget in the marketplace catalog.
+        Requires the `admin.widgets.publish` permission.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterWidgetRequest'
+      responses:
+        '201':
+          description: Widget registered
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Widget'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing admin.widgets.publish permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /widgets/{widget}:
     get:
       operationId: showWidget
@@ -1156,6 +1208,28 @@ components:
           maxLength: 100
           description: Case-insensitive substring match against widget name or slug
           example: feedback
+    RegisterWidgetRequest:
+      type: object
+      description: Payload for admin widget registration (`RegisterWidgetDTO`)
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          example: Feedback Form
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: feedback-form
+        description:
+          type: string
+          maxLength: 2000
+          example: Collect on-page feedback with customizable themes.
+        status:
+          $ref: '#/components/schemas/WidgetStatus'
     Widget:
       type: object
       description: Marketplace catalog entry (`WidgetDTO`)

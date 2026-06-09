@@ -51,6 +51,14 @@ final class WidgetMarketplaceOpenApiSpecTest extends TestCase
         $this->assertStringContainsString('/widgets/{widget}:', $this->specContents);
         $this->assertStringContainsString('operationId: listWidgets', $this->specContents);
         $this->assertStringContainsString('operationId: showWidget', $this->specContents);
+        $this->assertStringContainsString('operationId: registerWidget', $this->specContents);
+    }
+
+    #[Test]
+    public function openapi_spec_documents_widget_registration_schema(): void
+    {
+        $this->assertStringContainsString('RegisterWidgetRequest:', $this->specContents);
+        $this->assertStringContainsString('Missing admin.widgets.publish permission', $this->specContents);
     }
 
     #[Test]

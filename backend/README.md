@@ -624,7 +624,10 @@ WidgetService::getBySlug(slug) → WidgetDTO
 WidgetService::listVersionsForWidget(widgetUuid) → list<WidgetVersionDTO>
 WidgetService::listPublishedVersionsForWidget(widgetUuid) → list<WidgetVersionDTO>
 WidgetService::getVersionByUuid(uuid) → WidgetVersionDTO
+WidgetService::register(RegisterWidgetDTO, User) → WidgetDTO
 ```
+
+**Admin registration:** `POST /api/v1/widgets` requires `admin.widgets.publish`. Returns `WidgetDTO` with default status `draft`.
 
 **Tests:** Run the Widget suite with `composer test:widget`.
 
@@ -632,11 +635,12 @@ WidgetService::getVersionByUuid(uuid) → WidgetVersionDTO
 |-------|------|
 | OpenAPI contract | `tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php` |
 | Service | `tests/Unit/Services/Widget/WidgetServiceTest.php` |
-| DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php`, `tests/Unit/DTOs/Widget/ListWidgetCatalogQueryDTOTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php`, `tests/Unit/DTOs/Widget/ListWidgetCatalogQueryDTOTest.php`, `tests/Unit/DTOs/Widget/RegisterWidgetDTOTest.php` |
+| HTTP | `tests/Feature/Widget/WidgetRegistrationFlowTest.php`, `tests/Feature/Api/V1/Widget/WidgetAuthorizationEndpointTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WidgetModelTest.php`, `tests/Unit/Database/WidgetsMigrationTest.php` |
 
-OpenAPI schema and paths: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`, `ListWidgetCatalogQuery`, `GET /widgets`, `GET /widgets/{widget}`).
+OpenAPI schema and paths: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`, `RegisterWidgetRequest`, `ListWidgetCatalogQuery`, `GET /widgets`, `POST /widgets`, `GET /widgets/{widget}`).
 
 ### Widget versions
 

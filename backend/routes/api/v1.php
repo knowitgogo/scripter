@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\Tag\IndexTagsController;
 use App\Http\Controllers\Api\V1\Tag\ShowTagController;
 use App\Http\Controllers\Api\V1\Tag\StoreTagController;
 use App\Http\Controllers\Api\V1\Tag\UpdateTagController;
+use App\Http\Controllers\Api\V1\Widget\RegisterWidgetController;
 use App\Enums\Permission;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,10 @@ Route::middleware(['auth:api', 'permission:'.Permission::TagsManage->value])->gr
     Route::post('tags', StoreTagController::class)->name('tags.store');
     Route::put('tags/{tag}', UpdateTagController::class)->name('tags.update');
     Route::delete('tags/{tag}', DestroyTagController::class)->name('tags.destroy');
+});
+
+Route::middleware(['auth:api', 'permission:'.Permission::AdminWidgetsPublish->value])->group(function (): void {
+    Route::post('widgets', RegisterWidgetController::class)->name('widgets.register');
 });
 
 Route::get('health', HealthController::class)->name('health');

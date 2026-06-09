@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\Widget;
 
 use App\DTOs\Widget\ListWidgetCatalogQueryDTO;
+use App\DTOs\Widget\RegisterWidgetDTO;
+use App\Enums\AuditAction;
+use App\Enums\WidgetStatus;
+use App\Exceptions\DomainException;
+use App\Models\User;
 use App\Models\Widget;
 use App\Models\WidgetVersion;
 use App\Repositories\Eloquent\EloquentWidgetRepository;
 use App\Repositories\Eloquent\EloquentWidgetVersionRepository;
+use App\Services\Audit\AuditDispatcher;
 use App\Services\Widget\WidgetService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,9 +31,12 @@ final class WidgetServiceTest extends TestCase
     {
         parent::setUp();
 
+        config(['audit.enabled' => true, 'audit.async' => false]);
+
         $this->service = new WidgetService(
             new EloquentWidgetRepository,
             new EloquentWidgetVersionRepository,
+            app(AuditDispatcher::class),
         );
     }
 
@@ -106,6 +115,64 @@ final class WidgetServiceTest extends TestCase
 
         $this->assertSame('1.2.0', $dto->version);
         $this->assertSame($widget->uuid, $dto->widget_uuid);
+    }
+
+    #[Test]
+    public function it_registers_widget_as_draft_by_default(): void
+    {
+        $user = User::factory()->create();
+
+        $dto = $this->service->register(
+            new RegisterWidgetDTO(
+                name: 'Feedback Form',
+                slug: 'feedback-form',
+                description: 'Collect feedback.',
+            ),
+            $user,
+        );
+
+        $this->assertSame('feedback-form', $dto->slug);
+        $this->assertSame(WidgetStatus::Draft, $dto->status);
+        $this->assertDatabaseHas('widgets', [
+            'uuid' => $dto->uuid,
+            'slug' => 'feedback-form',
+            'status' => WidgetStatus::Draft->value,
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Created->value,
+            'subject_uuid' => $dto->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_registers_widget_with_explicit_status(): void
+    {
+        $user = User::factory()->create();
+
+        $dto = $this->service->register(
+            new RegisterWidgetDTO(
+                name: 'Published Widget',
+                slug: 'published-widget',
+                status: WidgetStatus::Published,
+            ),
+            $user,
+        );
+
+        $this->assertSame(WidgetStatus::Published, $dto->status);
+    }
+
+    #[Test]
+    public function it_rejects_duplicate_slug_on_registration(): void
+    {
+        Widget::factory()->create(['slug' => 'feedback-form']);
+        $user = User::factory()->create();
+
+        $this->expectException(DomainException::class);
+
+        $this->service->register(
+            new RegisterWidgetDTO(name: 'Duplicate', slug: 'feedback-form'),
+            $user,
+        );
     }
 
     #[Test]
