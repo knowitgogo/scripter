@@ -152,6 +152,38 @@ Controllers extend `App\Http\Controllers\Api\V1\BaseController` and return via:
 
 `$data` accepts arrays or DTOs (`DataTransferObject` / `Arrayable`).
 
+## DTO pattern
+
+Immutable data carriers live in `app/DTOs/{Domain}/` and extend `DataTransferObject`.
+
+```php
+final class WebsiteDTO extends DataTransferObject
+{
+    use MapsFromRequest, MapsFromModel;
+
+    public function __construct(
+        public readonly string $uuid,
+        public readonly string $name,
+        public readonly string $status,
+    ) {}
+
+    protected function hiddenProperties(): array
+    {
+        return ['id'];
+    }
+}
+```
+
+| Capability | Mechanism |
+|------------|-----------|
+| Immutability | `public readonly` constructor properties |
+| Serialization | `toArray()` / `jsonSerialize()` with nested DTO support |
+| From input | `MapsFromRequest::fromRequest()` |
+| From persistence | `MapsFromModel::fromModel()` (excludes integer `id`) |
+| From array | `DataTransferObject::fromArray()` |
+
+Services return DTOs to controllers; controllers pass DTOs to `BaseController` response helpers.
+
 ## UUID strategy
 
 Public entities are identified by UUID in routes, DTOs, and API responses. Internal integer `id` values are never exposed.

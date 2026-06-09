@@ -74,6 +74,8 @@ final class FolderStructureTest extends TestCase
 
         $files = [
             'DTOs/DataTransferObject.php',
+            'DTOs/Concerns/MapsFromRequest.php',
+            'DTOs/Concerns/MapsFromModel.php',
             'Support/ApiResponse.php',
             'Support/ApiExceptionRenderer.php',
             'Support/UuidGenerator.php',
