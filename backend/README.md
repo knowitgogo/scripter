@@ -340,6 +340,30 @@ The `roles` table defines authorization roles referenced by `users.role_id` and 
 
 **Tests:** `tests/Feature/Models/RoleModelTest.php`, `tests/Unit/Database/RoleSeederTest.php`, `tests/Unit/Database/RolesMigrationTest.php`, `tests/Unit/Enums/RoleSlugTest.php`.
 
+## Role assignment service
+
+`RoleAssignmentService` (`app/Services/Auth/RoleAssignmentService.php`) assigns a `RoleSlug` to a user identified by UUID.
+
+```
+AssignRoleDTO
+  → RoleAssignmentService::assign()
+  → UserRepository + RoleRepository (persistence)
+  → CacheService::forget(user_permissions)
+  → AuditDispatcher (role change audit)
+  → UserDTO
+```
+
+| Component | Location |
+|-----------|----------|
+| Command DTO | `app/DTOs/Auth/AssignRoleDTO.php` |
+| Response DTO | `app/DTOs/Auth/UserDTO.php`, `app/DTOs/Auth/RoleDTO.php` |
+| Service | `app/Services/Auth/RoleAssignmentService.php` |
+| Repositories | `UserRepositoryInterface`, `RoleRepositoryInterface` |
+
+**Behaviour:** idempotent when the user already has the target role; clears `user_permissions` cache on change; records an `updated` audit event with `previous_role` and `new_role` metadata.
+
+**Tests:** `tests/Unit/Services/Auth/RoleAssignmentServiceTest.php`, `tests/Unit/DTOs/Auth/UserDTOTest.php`.
+
 ## Users domain model
 
 The `users` table stores platform accounts. Migrations are additive on the Laravel default schema.

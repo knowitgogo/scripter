@@ -196,6 +196,51 @@ components:
         updated_at:
           type: string
           format: date-time
+    User:
+      type: object
+      description: Platform user account (Auth domain response)
+      required:
+        - uuid
+        - name
+        - email
+        - status
+        - role
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+          example: Jane Doe
+        email:
+          type: string
+          format: email
+          example: jane@example.com
+        status:
+          type: string
+          enum: [active, suspended, pending]
+          example: active
+        role:
+          $ref: '#/components/schemas/Role'
+        last_login_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    AssignRoleRequest:
+      type: object
+      description: Payload for assigning a role to a user (future admin endpoint)
+      required:
+        - role_slug
+      properties:
+        role_slug:
+          type: string
+          enum: [customer, admin, super_admin]
+          example: admin
     HealthStatus:
       type: object
       required:
