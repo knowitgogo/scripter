@@ -87,14 +87,7 @@ final class WidgetVersionService
             throw new DomainException('The widget version cannot be published without an asset manifest URL.', 422);
         }
 
-        foreach ($this->widgetVersions->listPublishedForWidget($widgetVersion->widget_id) as $published) {
-            if ($published->id !== $widgetVersion->id) {
-                $this->widgetVersions->update($published, ['status' => WidgetVersionStatus::Deprecated]);
-            }
-        }
-
-        $this->widgetVersions->update($widgetVersion, ['status' => WidgetVersionStatus::Published]);
-        $widgetVersion->refresh();
+        $this->replacePublishedVersion($widgetVersion);
 
         $this->auditDispatcher->dispatch(
             GenericAuditEvent::record(
@@ -106,6 +99,51 @@ final class WidgetVersionService
                     'widget_uuid' => $widgetVersion->widget->uuid,
                     'version' => $widgetVersion->version,
                 ],
+            ),
+        );
+
+        return WidgetVersionDTO::fromModel($widgetVersion);
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DomainException
+     */
+    public function rollback(string $versionUuid, User $user): WidgetVersionDTO
+    {
+        /** @var WidgetVersion $widgetVersion */
+        $widgetVersion = $this->widgetVersions->findByUuidOrFail($versionUuid);
+        $widgetVersion->load('widget');
+
+        if ($widgetVersion->status !== WidgetVersionStatus::Deprecated) {
+            throw new DomainException('Only deprecated widget versions can be rolled back.', 422);
+        }
+
+        if ($widgetVersion->asset_manifest_url === null || trim($widgetVersion->asset_manifest_url) === '') {
+            throw new DomainException('The widget version cannot be rolled back without an asset manifest URL.', 422);
+        }
+
+        $currentPublished = $this->widgetVersions->findPublishedForWidget($widgetVersion->widget_id);
+
+        $metadata = [
+            'widget_uuid' => $widgetVersion->widget->uuid,
+            'version' => $widgetVersion->version,
+        ];
+
+        if ($currentPublished !== null) {
+            $metadata['replaced_version_uuid'] = $currentPublished->uuid;
+            $metadata['replaced_version'] = $currentPublished->version;
+        }
+
+        $this->replacePublishedVersion($widgetVersion);
+
+        $this->auditDispatcher->dispatch(
+            GenericAuditEvent::record(
+                action: AuditAction::Restored,
+                subjectType: 'widget_version',
+                subjectUuid: $widgetVersion->uuid,
+                actorUuid: $user->uuid,
+                metadata: $metadata,
             ),
         );
 
@@ -147,5 +185,17 @@ final class WidgetVersionService
         );
 
         return WidgetVersionDTO::fromModel($widgetVersion);
+    }
+
+    private function replacePublishedVersion(WidgetVersion $widgetVersion): void
+    {
+        foreach ($this->widgetVersions->listPublishedForWidget($widgetVersion->widget_id) as $published) {
+            if ($published->id !== $widgetVersion->id) {
+                $this->widgetVersions->update($published, ['status' => WidgetVersionStatus::Deprecated]);
+            }
+        }
+
+        $this->widgetVersions->update($widgetVersion, ['status' => WidgetVersionStatus::Published]);
+        $widgetVersion->refresh();
     }
 }

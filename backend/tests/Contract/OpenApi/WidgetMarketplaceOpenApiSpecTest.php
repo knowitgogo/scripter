@@ -56,6 +56,13 @@ final class WidgetMarketplaceOpenApiSpecTest extends TestCase
         $this->assertStringContainsString('operationId: deactivateWidget', $this->specContents);
         $this->assertStringContainsString('operationId: publishWidgetVersion', $this->specContents);
         $this->assertStringContainsString('operationId: deprecateWidgetVersion', $this->specContents);
+        $this->assertStringContainsString('operationId: rollbackWidgetVersion', $this->specContents);
+    }
+
+    #[Test]
+    public function openapi_spec_documents_widget_version_rollback_path(): void
+    {
+        $this->assertStringContainsString('/widget-versions/{widget_version}/rollback:', $this->specContents);
     }
 
     #[Test]

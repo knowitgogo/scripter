@@ -167,6 +167,58 @@ final class WidgetVersionServiceTest extends TestCase
     }
 
     #[Test]
+    public function it_rolls_back_deprecated_widget_version_and_deprecates_current_release(): void
+    {
+        $user = User::factory()->create();
+        $widget = Widget::factory()->create();
+        $previous = WidgetVersion::factory()->for($widget)->deprecated()->create([
+            'version' => '1.0.0',
+            'asset_manifest_url' => 'https://cdn.example.com/manifest-1.0.0.json',
+        ]);
+        $current = WidgetVersion::factory()->for($widget)->release('1.1.0')->create();
+
+        $dto = $this->service->rollback($previous->uuid, $user);
+
+        $this->assertSame(WidgetVersionStatus::Published, $dto->status);
+        $this->assertSame('1.0.0', $dto->version);
+        $this->assertDatabaseHas('widget_versions', [
+            'uuid' => $current->uuid,
+            'status' => WidgetVersionStatus::Deprecated->value,
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Restored->value,
+            'subject_uuid' => $previous->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_rejects_rollback_for_draft_widget_version(): void
+    {
+        $widget = Widget::factory()->create();
+        $version = WidgetVersion::factory()->for($widget)->draft()->create([
+            'version' => '1.0.0',
+            'asset_manifest_url' => 'https://cdn.example.com/manifest.json',
+        ]);
+        $user = User::factory()->create();
+
+        $this->expectException(DomainException::class);
+
+        $this->service->rollback($version->uuid, $user);
+    }
+
+    #[Test]
+    public function it_rejects_rollback_for_published_widget_version(): void
+    {
+        $widget = Widget::factory()->create();
+        $version = WidgetVersion::factory()->for($widget)->release('1.0.0')->create();
+        $user = User::factory()->create();
+
+        $this->expectException(DomainException::class);
+
+        $this->service->rollback($version->uuid, $user);
+    }
+
+    #[Test]
     public function it_throws_when_widget_is_not_found_for_version_listing(): void
     {
         $this->expectException(ModelNotFoundException::class);

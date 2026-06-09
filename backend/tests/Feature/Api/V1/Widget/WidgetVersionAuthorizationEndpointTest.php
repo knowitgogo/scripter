@@ -30,6 +30,7 @@ final class WidgetVersionAuthorizationEndpointTest extends TestCase
 
         $this->postJson('/api/v1/widget-versions/'.$version->uuid.'/publish')->assertUnauthorized();
         $this->postJson('/api/v1/widget-versions/'.$version->uuid.'/deprecate')->assertUnauthorized();
+        $this->postJson('/api/v1/widget-versions/'.$version->uuid.'/rollback')->assertUnauthorized();
     }
 
     #[Test]
@@ -48,6 +49,10 @@ final class WidgetVersionAuthorizationEndpointTest extends TestCase
         $this->actingAsJwt($admin)
             ->postJson('/api/v1/widget-versions/'.$version->uuid.'/deprecate')
             ->assertForbidden();
+
+        $this->actingAsJwt($admin)
+            ->postJson('/api/v1/widget-versions/'.$version->uuid.'/rollback')
+            ->assertForbidden();
     }
 
     #[Test]
@@ -63,6 +68,10 @@ final class WidgetVersionAuthorizationEndpointTest extends TestCase
 
         $this->actingAsJwt($customer)
             ->postJson('/api/v1/widget-versions/'.$version->uuid.'/deprecate')
+            ->assertForbidden();
+
+        $this->actingAsJwt($customer)
+            ->postJson('/api/v1/widget-versions/'.$version->uuid.'/rollback')
             ->assertForbidden();
     }
 }
