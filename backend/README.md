@@ -322,6 +322,28 @@ Infrastructure settings live in `config/infrastructure.php`. Defaults use **data
 php artisan queue:work --queue=default,analytics,billing --tries=3
 ```
 
+## Users domain model
+
+The `users` table stores platform accounts. Migrations are additive on the Laravel default schema.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | bigint | Internal primary key (hidden from API) |
+| `uuid` | uuid | Public identifier |
+| `role_id` | FK → `roles` | Authorization role |
+| `name` | string | Display name |
+| `email` | string | Unique login email |
+| `password` | string | Hashed credential |
+| `status` | string | `active`, `suspended`, or `pending` (`UserStatus` enum) |
+| `last_login_at` | timestamp | Nullable last successful login |
+| `timestamps` | — | `created_at`, `updated_at` |
+
+**Related tables:** `roles` (`customer`, `admin`, `super_admin` seeded via `RoleSeeder`).
+
+**Factories:** `UserFactory` (default customer role; states: `admin()`, `suspended()`, `pending()`, `unverified()`, `withLastLogin()`), `RoleFactory`.
+
+**Tests:** `tests/Feature/Models/UserModelTest.php`, `tests/Feature/Models/RoleModelTest.php`, `tests/Unit/Database/RoleSeederTest.php`.
+
 ## OpenAPI
 
 The contract lives at `openapi/openapi.yaml`. Extend this file as endpoints are added. Contract tests in `tests/Contract/` validate the spec artifact.
