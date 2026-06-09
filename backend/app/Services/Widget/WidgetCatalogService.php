@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Widget;
 
+use App\DTOs\Widget\ListWidgetCatalogQueryDTO;
 use App\DTOs\Widget\WidgetDTO;
 use App\Models\Widget;
 use App\Repositories\Contracts\WidgetRepositoryInterface;
@@ -23,7 +24,7 @@ final class WidgetCatalogService
      */
     public function listPublished(): array
     {
-        return $this->widgets->listPublishedOrderedByName()
+        return $this->widgets->listPublishedOrderedByName(new ListWidgetCatalogQueryDTO())
             ->map(fn (Widget $widget): WidgetDTO => WidgetDTO::fromModel($widget))
             ->values()
             ->all();

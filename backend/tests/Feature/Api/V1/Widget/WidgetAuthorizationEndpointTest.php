@@ -22,6 +22,22 @@ final class WidgetAuthorizationEndpointTest extends TestCase
     }
 
     #[Test]
+    public function widget_listing_returns_401_without_authentication(): void
+    {
+        $this->getJson('/api/v1/widgets')->assertUnauthorized();
+    }
+
+    #[Test]
+    public function widget_listing_returns_403_without_widgets_view_permission(): void
+    {
+        config(['permissions.roles.customer' => []]);
+
+        $user = $this->createAuthUser();
+
+        $this->actingAsJwt($user)->getJson('/api/v1/widgets')->assertForbidden();
+    }
+
+    #[Test]
     public function widget_registration_returns_401_without_authentication(): void
     {
         $this->postJson('/api/v1/widgets', [])->assertUnauthorized();

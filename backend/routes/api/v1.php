@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\Widget\DeactivateWidgetController;
 use App\Http\Controllers\Api\V1\Widget\DeprecateWidgetVersionController;
 use App\Http\Controllers\Api\V1\Widget\PublishWidgetVersionController;
 use App\Http\Controllers\Api\V1\Widget\RollbackWidgetVersionController;
+use App\Http\Controllers\Api\V1\Widget\IndexWidgetsController;
 use App\Http\Controllers\Api\V1\Widget\RegisterWidgetController;
 use App\Enums\Permission;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,10 @@ Route::middleware(['auth:api', 'permission:'.Permission::TagsManage->value])->gr
     Route::post('tags', StoreTagController::class)->name('tags.store');
     Route::put('tags/{tag}', UpdateTagController::class)->name('tags.update');
     Route::delete('tags/{tag}', DestroyTagController::class)->name('tags.destroy');
+});
+
+Route::middleware(['auth:api', 'permission:'.Permission::WidgetsView->value])->group(function (): void {
+    Route::get('widgets', IndexWidgetsController::class)->name('widgets.index');
 });
 
 Route::middleware(['auth:api', 'permission:'.Permission::AdminWidgetsPublish->value])->group(function (): void {

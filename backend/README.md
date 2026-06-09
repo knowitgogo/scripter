@@ -627,6 +627,14 @@ WidgetService::getVersionByUuid(uuid) → WidgetVersionDTO
 WidgetService::register(RegisterWidgetDTO, User) → WidgetDTO
 ```
 
+**Catalog listing:** `GET /api/v1/widgets` requires `widgets.view`. Query filters via `ListWidgetCatalogQueryDTO`:
+
+| Parameter | Behavior |
+|-----------|----------|
+| `search` | Substring match on name, slug, or description |
+| `category` | Slug equals or starts with `{category}-` |
+| `slugs[]` | Restrict to explicit widget slugs |
+
 **Admin registration:** `POST /api/v1/widgets` requires `admin.widgets.publish`. Returns `WidgetDTO` with default status `draft`.
 
 **Admin activation/deactivation:**
@@ -645,7 +653,7 @@ Both require `admin.widgets.publish` and emit audit events (`published`, `deprec
 | OpenAPI contract | `tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php` |
 | Service | `tests/Unit/Services/Widget/WidgetServiceTest.php` |
 | DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php`, `tests/Unit/DTOs/Widget/ListWidgetCatalogQueryDTOTest.php`, `tests/Unit/DTOs/Widget/RegisterWidgetDTOTest.php` |
-| HTTP | `tests/Feature/Widget/WidgetRegistrationFlowTest.php`, `tests/Feature/Widget/WidgetActivationFlowTest.php`, `tests/Feature/Api/V1/Widget/WidgetAuthorizationEndpointTest.php` |
+| HTTP | `tests/Feature/Widget/WidgetRegistrationFlowTest.php`, `tests/Feature/Widget/WidgetActivationFlowTest.php`, `tests/Feature/Api/V1/Widget/ListWidgetsEndpointTest.php`, `tests/Feature/Api/V1/Widget/WidgetAuthorizationEndpointTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WidgetModelTest.php`, `tests/Unit/Database/WidgetsMigrationTest.php` |
 

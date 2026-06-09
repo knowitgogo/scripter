@@ -58,13 +58,32 @@ final class WidgetServiceTest extends TestCase
     #[Test]
     public function it_filters_published_widgets_by_search_query(): void
     {
-        Widget::factory()->published()->create(['name' => 'Feedback Form', 'slug' => 'feedback-form']);
+        Widget::factory()->published()->create([
+            'name' => 'Feedback Form',
+            'slug' => 'feedback-form',
+            'description' => 'Collect feedback.',
+        ]);
         Widget::factory()->published()->create(['name' => 'Newsletter Signup', 'slug' => 'newsletter-signup']);
 
         $widgets = $this->service->listPublished(new ListWidgetCatalogQueryDTO(search: 'feedback'));
 
         $this->assertCount(1, $widgets);
         $this->assertSame('feedback-form', $widgets[0]->slug);
+    }
+
+    #[Test]
+    public function it_filters_published_widgets_by_category_and_slugs(): void
+    {
+        Widget::factory()->published()->create(['name' => 'Feedback Form', 'slug' => 'feedback-form']);
+        Widget::factory()->published()->create(['name' => 'Feedback Popup', 'slug' => 'feedback-popup']);
+        Widget::factory()->published()->create(['name' => 'Newsletter', 'slug' => 'newsletter-signup']);
+
+        $byCategory = $this->service->listPublished(new ListWidgetCatalogQueryDTO(category: 'feedback'));
+        $bySlugs = $this->service->listPublished(new ListWidgetCatalogQueryDTO(slugs: ['newsletter-signup']));
+
+        $this->assertCount(2, $byCategory);
+        $this->assertCount(1, $bySlugs);
+        $this->assertSame('newsletter-signup', $bySlugs[0]->slug);
     }
 
     #[Test]

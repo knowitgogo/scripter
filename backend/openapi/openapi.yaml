@@ -755,18 +755,43 @@ paths:
       summary: List published widgets
       description: |
         Returns published marketplace widgets ordered by name.
-        Optionally filter by a case-insensitive search term matching name or slug.
+        Optionally filter by a case-insensitive search term matching name, slug, or description,
+        by category slug prefix, or by explicit widget slugs.
       security:
         - bearerAuth: []
       parameters:
         - name: search
           in: query
-          description: Filter widgets by name or slug substring
+          description: Filter widgets by name, slug, or description substring
           required: false
           schema:
             type: string
             maxLength: 100
             example: feedback
+        - name: category
+          in: query
+          description: Filter widgets whose slug equals or starts with the category prefix
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+            pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+            example: feedback
+        - name: slugs
+          in: query
+          description: Filter widgets to the listed slugs
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              maxLength: 100
+              pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          style: form
+          explode: true
+          example:
+            - feedback-form
+            - newsletter-signup
       responses:
         '200':
           description: Widget catalog collection
@@ -1502,8 +1527,24 @@ components:
         search:
           type: string
           maxLength: 100
-          description: Case-insensitive substring match against widget name or slug
+          description: Case-insensitive substring match against widget name, slug, or description
           example: feedback
+        category:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          description: Match widgets whose slug equals or starts with this category prefix
+          example: feedback
+        slugs:
+          type: array
+          description: When non-empty, only widgets with matching slugs are returned
+          items:
+            type: string
+            maxLength: 100
+            pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example:
+            - feedback-form
+            - newsletter-signup
     RegisterWidgetRequest:
       type: object
       description: Payload for admin widget registration (`RegisterWidgetDTO`)

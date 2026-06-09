@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Repositories\Eloquent;
 
+use App\DTOs\Widget\ListWidgetCatalogQueryDTO;
 use App\Enums\WidgetStatus;
 use App\Models\Widget;
 use App\Repositories\Contracts\EloquentRepositoryInterface;
@@ -69,13 +70,48 @@ final class EloquentWidgetRepositoryTest extends TestCase
     #[Test]
     public function it_filters_published_widgets_by_search_term(): void
     {
-        Widget::factory()->published()->create(['name' => 'Feedback Form', 'slug' => 'feedback-form']);
+        Widget::factory()->published()->create([
+            'name' => 'Feedback Form',
+            'slug' => 'feedback-form',
+            'description' => 'Collect feedback on your site.',
+        ]);
         Widget::factory()->published()->create(['name' => 'Newsletter Signup', 'slug' => 'newsletter-signup']);
 
         $repository = new EloquentWidgetRepository;
 
-        $this->assertCount(1, $repository->listPublishedOrderedByName('feedback'));
-        $this->assertSame('Feedback Form', $repository->listPublishedOrderedByName('feedback')->first()->name);
+        $this->assertCount(1, $repository->listPublishedOrderedByName(new ListWidgetCatalogQueryDTO(search: 'feedback')));
+        $this->assertSame('Feedback Form', $repository->listPublishedOrderedByName(new ListWidgetCatalogQueryDTO(search: 'feedback'))->first()->name);
+        $this->assertCount(1, $repository->listPublishedOrderedByName(new ListWidgetCatalogQueryDTO(search: 'Collect feedback')));
         $this->assertCount(2, $repository->listPublishedOrderedByName());
+    }
+
+    #[Test]
+    public function it_filters_published_widgets_by_category_prefix(): void
+    {
+        Widget::factory()->published()->create(['name' => 'Feedback Form', 'slug' => 'feedback-form']);
+        Widget::factory()->published()->create(['name' => 'Feedback Popup', 'slug' => 'feedback-popup']);
+        Widget::factory()->published()->create(['name' => 'Newsletter', 'slug' => 'newsletter-signup']);
+
+        $repository = new EloquentWidgetRepository;
+        $widgets = $repository->listPublishedOrderedByName(new ListWidgetCatalogQueryDTO(category: 'feedback'));
+
+        $this->assertCount(2, $widgets);
+        $this->assertSame(['feedback-form', 'feedback-popup'], $widgets->pluck('slug')->all());
+    }
+
+    #[Test]
+    public function it_filters_published_widgets_by_slug_list(): void
+    {
+        Widget::factory()->published()->create(['slug' => 'feedback-form']);
+        Widget::factory()->published()->create(['slug' => 'newsletter-signup']);
+        Widget::factory()->published()->create(['slug' => 'analytics-dashboard']);
+
+        $repository = new EloquentWidgetRepository;
+        $widgets = $repository->listPublishedOrderedByName(new ListWidgetCatalogQueryDTO(
+            slugs: ['feedback-form', 'analytics-dashboard'],
+        ));
+
+        $this->assertCount(2, $widgets);
+        $this->assertSame(['analytics-dashboard', 'feedback-form'], $widgets->pluck('slug')->sort()->values()->all());
     }
 }

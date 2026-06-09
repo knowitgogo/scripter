@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repositories\Eloquent;
 
+use App\DTOs\Widget\ListWidgetCatalogQueryDTO;
 use App\Enums\WidgetStatus;
 use App\Models\Widget;
 use App\Repositories\Contracts\WidgetRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -37,31 +39,52 @@ final class EloquentWidgetRepository extends UuidEloquentRepository implements W
     /**
      * @return Collection<int, Widget>
      */
-    public function listPublishedOrderedByName(?string $search = null): Collection
+    public function listPublishedOrderedByName(?ListWidgetCatalogQueryDTO $query = null): Collection
     {
-        return $this->listByStatus(WidgetStatus::Published, $search);
+        return $this->listByStatus(WidgetStatus::Published, $query);
     }
 
     /**
      * @return Collection<int, Widget>
      */
-    public function listByStatus(WidgetStatus $status, ?string $search = null): Collection
+    public function listByStatus(WidgetStatus $status, ?ListWidgetCatalogQueryDTO $query = null): Collection
     {
-        $query = $this->newModelQuery()
+        $query ??= new ListWidgetCatalogQueryDTO;
+
+        $builder = $this->newModelQuery()
             ->where('status', $status->value);
 
-        if ($search !== null && $search !== '') {
-            $query->where(function ($builder) use ($search): void {
-                $builder->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('slug', 'like', '%'.$search.'%');
-            });
-        }
+        $this->applyCatalogFilters($builder, $query);
 
-        return $query->orderBy('name')->get();
+        return $builder->orderBy('name')->get();
     }
 
     protected function model(): string
     {
         return Widget::class;
+    }
+
+    private function applyCatalogFilters(Builder $builder, ListWidgetCatalogQueryDTO $query): void
+    {
+        if ($query->hasSearch()) {
+            $term = '%'.$query->normalizedSearch().'%';
+            $builder->where(function (Builder $searchQuery) use ($term): void {
+                $searchQuery->where('name', 'like', $term)
+                    ->orWhere('slug', 'like', $term)
+                    ->orWhere('description', 'like', $term);
+            });
+        }
+
+        if ($query->hasSlugFilter()) {
+            $builder->whereIn('slug', $query->slugs);
+        }
+
+        if ($query->hasCategoryFilter()) {
+            $category = $query->normalizedCategory();
+            $builder->where(function (Builder $categoryQuery) use ($category): void {
+                $categoryQuery->where('slug', $category)
+                    ->orWhere('slug', 'like', $category.'-%');
+            });
+        }
     }
 }

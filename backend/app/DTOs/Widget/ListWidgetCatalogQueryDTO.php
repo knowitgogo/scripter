@@ -14,8 +14,13 @@ final class ListWidgetCatalogQueryDTO extends DataTransferObject
 {
     use MapsFromRequest;
 
+    /**
+     * @param  list<string>  $slugs  When non-empty, only widgets with matching slugs are returned.
+     */
     public function __construct(
         public readonly ?string $search = null,
+        public readonly ?string $category = null,
+        public readonly array $slugs = [],
     ) {}
 
     public function hasSearch(): bool
@@ -30,5 +35,24 @@ final class ListWidgetCatalogQueryDTO extends DataTransferObject
         }
 
         return trim($this->search);
+    }
+
+    public function hasCategoryFilter(): bool
+    {
+        return $this->category !== null && trim($this->category) !== '';
+    }
+
+    public function normalizedCategory(): ?string
+    {
+        if (! $this->hasCategoryFilter()) {
+            return null;
+        }
+
+        return trim($this->category);
+    }
+
+    public function hasSlugFilter(): bool
+    {
+        return $this->slugs !== [];
     }
 }

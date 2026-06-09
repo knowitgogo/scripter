@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Contracts;
 
+use App\DTOs\Widget\ListWidgetCatalogQueryDTO;
 use App\Enums\WidgetStatus;
 use App\Models\Widget;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,10 +21,10 @@ interface WidgetRepositoryInterface extends UuidRepositoryInterface
     /**
      * @return Collection<int, Widget>
      */
-    public function listPublishedOrderedByName(?string $search = null): Collection;
+    public function listPublishedOrderedByName(?ListWidgetCatalogQueryDTO $query = null): Collection;
 
     /**
      * @return Collection<int, Widget>
      */
-    public function listByStatus(WidgetStatus $status): Collection;
+    public function listByStatus(WidgetStatus $status, ?ListWidgetCatalogQueryDTO $query = null): Collection;
 }

@@ -38,7 +38,7 @@ final class WidgetService
     {
         $query ??= new ListWidgetCatalogQueryDTO;
 
-        return $this->widgets->listPublishedOrderedByName($query->normalizedSearch())
+        return $this->widgets->listPublishedOrderedByName($query)
             ->map(fn (Widget $widget): WidgetDTO => WidgetDTO::fromModel($widget))
             ->values()
             ->all();

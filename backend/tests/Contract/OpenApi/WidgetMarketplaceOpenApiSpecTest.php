@@ -80,6 +80,15 @@ final class WidgetMarketplaceOpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_documents_marketplace_search_and_filtering(): void
+    {
+        $this->assertStringContainsString('category:', $this->specContents);
+        $this->assertStringContainsString('Filter widgets whose slug equals or starts with the category prefix', $this->specContents);
+        $this->assertStringContainsString('Filter widgets to the listed slugs', $this->specContents);
+        $this->assertStringContainsString('name, slug, or description', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_documents_widget_permissions(): void
     {
         $this->assertStringContainsString('admin.widgets.publish', $this->specContents);

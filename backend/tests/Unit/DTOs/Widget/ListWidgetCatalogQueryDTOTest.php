@@ -12,22 +12,25 @@ use Tests\TestCase;
 final class ListWidgetCatalogQueryDTOTest extends TestCase
 {
     #[Test]
-    public function it_defaults_to_no_search_filter(): void
+    public function it_defaults_to_no_filters(): void
     {
         $dto = new ListWidgetCatalogQueryDTO;
 
         $this->assertNull($dto->search);
+        $this->assertNull($dto->category);
+        $this->assertSame([], $dto->slugs);
         $this->assertFalse($dto->hasSearch());
-        $this->assertNull($dto->normalizedSearch());
+        $this->assertFalse($dto->hasCategoryFilter());
+        $this->assertFalse($dto->hasSlugFilter());
     }
 
     #[Test]
-    public function it_treats_blank_search_as_no_filter(): void
+    public function it_treats_blank_search_and_category_as_no_filter(): void
     {
-        $dto = new ListWidgetCatalogQueryDTO(search: '   ');
+        $dto = new ListWidgetCatalogQueryDTO(search: '   ', category: '   ');
 
         $this->assertFalse($dto->hasSearch());
-        $this->assertNull($dto->normalizedSearch());
+        $this->assertFalse($dto->hasCategoryFilter());
     }
 
     #[Test]
@@ -47,6 +50,8 @@ final class ListWidgetCatalogQueryDTOTest extends TestCase
             {
                 return [
                     'search' => ' feedback ',
+                    'category' => ' analytics ',
+                    'slugs' => ['feedback-form', 'newsletter-signup'],
                 ];
             }
 
@@ -61,7 +66,9 @@ final class ListWidgetCatalogQueryDTOTest extends TestCase
 
         $dto = ListWidgetCatalogQueryDTO::fromRequest($request);
 
-        $this->assertTrue($dto->hasSearch());
         $this->assertSame('feedback', $dto->normalizedSearch());
+        $this->assertSame('analytics', $dto->normalizedCategory());
+        $this->assertTrue($dto->hasSlugFilter());
+        $this->assertSame(['feedback-form', 'newsletter-signup'], $dto->slugs);
     }
 }
