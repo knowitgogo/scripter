@@ -125,6 +125,7 @@ All versioned responses include the `X-API-Version` header via `SetApiVersionHea
 | Endpoint | Description |
 |----------|-------------|
 | `POST /api/v1/auth/login` | Authenticate with email/password; returns JWT |
+| `POST /api/v1/auth/refresh` | Issue new JWT within refresh window (requires Bearer token) |
 | `POST /api/v1/auth/logout` | Invalidate current JWT (requires Bearer token) |
 | `GET /api/v1/health` | Liveness probe — process is running |
 | `GET /api/v1/ready` | Readiness probe — database and cache are reachable |
@@ -366,7 +367,7 @@ php artisan jwt:secret   # writes JWT_SECRET to .env
 
 - `User` implements `JWTSubject`; `sub` claim is the public `uuid` (never internal `id`)
 - Custom `role` claim via `App\Support\Auth\JwtClaimBuilder`
-- `AuthTokenDTO` is the token response shape for `LoginService` / `TokenRefreshService`
+- `AuthTokenDTO` is the token response shape for `LoginService` and `TokenRefreshService`
 - Protect routes with `auth:api` or `jwt.auth` middleware
 
 **Tests:** `tests/Feature/Auth/JwtAuthenticationTest.php`, `tests/Unit/Config/JwtConfigTest.php`, `tests/Unit/Auth/JwtClaimBuilderTest.php`, `tests/Unit/Models/UserJwtSubjectTest.php`.
@@ -408,6 +409,24 @@ LogoutRequest → LogoutService → JWT guard logout + audit → LogoutResultDTO
 **Auth:** `auth:api` middleware required. Blacklisted tokens cannot be reused.
 
 **Tests:** `tests/Feature/Api/V1/Auth/LogoutEndpointTest.php`, `tests/Unit/Services/Auth/LogoutServiceTest.php`.
+
+## Refresh token endpoint
+
+`POST /api/v1/auth/refresh` issues a new `AuthTokenDTO` when the caller presents a valid JWT within `JWT_REFRESH_TTL`.
+
+```
+RefreshTokenRequest → TokenRefreshService → JWT refresh + UserRepository status check → AuthTokenDTO
+```
+
+| Component | Location |
+|-----------|----------|
+| Controller | `app/Http/Controllers/Api/V1/Auth/RefreshTokenController.php` |
+| Form Request | `app/Http/Requests/Auth/RefreshTokenRequest.php` |
+| Service | `app/Services/Auth/TokenRefreshService.php` |
+
+**Rules:** previous token is blacklisted; only `active` users receive a new token; suspended/pending accounts return 403.
+
+**Tests:** `tests/Feature/Api/V1/Auth/RefreshTokenEndpointTest.php`, `tests/Unit/Services/Auth/TokenRefreshServiceTest.php`.
 
 ## Role assignment service
 

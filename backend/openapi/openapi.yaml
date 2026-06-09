@@ -66,6 +66,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      tags:
+        - Auth
+      summary: Refresh access token
+      description: |
+        Issues a new JWT access token when the caller presents a valid token
+        within the configured refresh window (`JWT_REFRESH_TTL`). The previous
+        token is blacklisted.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token refreshed successfully
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Missing, invalid, or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Account is not active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /auth/logout:
     post:
       operationId: logout
