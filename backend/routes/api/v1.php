@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\V1\Tag\IndexTagsController;
 use App\Http\Controllers\Api\V1\Tag\ShowTagController;
 use App\Http\Controllers\Api\V1\Tag\StoreTagController;
 use App\Http\Controllers\Api\V1\Tag\UpdateTagController;
+use App\Http\Controllers\Api\V1\Widget\ActivateWidgetController;
+use App\Http\Controllers\Api\V1\Widget\DeactivateWidgetController;
 use App\Http\Controllers\Api\V1\Widget\RegisterWidgetController;
 use App\Enums\Permission;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +66,8 @@ Route::middleware(['auth:api', 'permission:'.Permission::TagsManage->value])->gr
 
 Route::middleware(['auth:api', 'permission:'.Permission::AdminWidgetsPublish->value])->group(function (): void {
     Route::post('widgets', RegisterWidgetController::class)->name('widgets.register');
+    Route::post('widgets/{widget}/activate', ActivateWidgetController::class)->name('widgets.activate');
+    Route::post('widgets/{widget}/deactivate', DeactivateWidgetController::class)->name('widgets.deactivate');
 });
 
 Route::get('health', HealthController::class)->name('health');

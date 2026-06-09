@@ -629,6 +629,15 @@ WidgetService::register(RegisterWidgetDTO, User) → WidgetDTO
 
 **Admin registration:** `POST /api/v1/widgets` requires `admin.widgets.publish`. Returns `WidgetDTO` with default status `draft`.
 
+**Admin activation/deactivation:**
+
+```
+POST /api/v1/widgets/{uuid}/activate   → published (requires published version)
+POST /api/v1/widgets/{uuid}/deactivate → deprecated (published only)
+```
+
+Both require `admin.widgets.publish` and emit audit events (`published`, `deprecated`).
+
 **Tests:** Run the Widget suite with `composer test:widget`.
 
 | Layer | Path |
@@ -636,11 +645,11 @@ WidgetService::register(RegisterWidgetDTO, User) → WidgetDTO
 | OpenAPI contract | `tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php` |
 | Service | `tests/Unit/Services/Widget/WidgetServiceTest.php` |
 | DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php`, `tests/Unit/DTOs/Widget/ListWidgetCatalogQueryDTOTest.php`, `tests/Unit/DTOs/Widget/RegisterWidgetDTOTest.php` |
-| HTTP | `tests/Feature/Widget/WidgetRegistrationFlowTest.php`, `tests/Feature/Api/V1/Widget/WidgetAuthorizationEndpointTest.php` |
+| HTTP | `tests/Feature/Widget/WidgetRegistrationFlowTest.php`, `tests/Feature/Widget/WidgetActivationFlowTest.php`, `tests/Feature/Api/V1/Widget/WidgetAuthorizationEndpointTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WidgetModelTest.php`, `tests/Unit/Database/WidgetsMigrationTest.php` |
 
-OpenAPI schema and paths: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`, `RegisterWidgetRequest`, `ListWidgetCatalogQuery`, `GET /widgets`, `POST /widgets`, `GET /widgets/{widget}`).
+OpenAPI schema and paths: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`, `RegisterWidgetRequest`, `ListWidgetCatalogQuery`, `GET /widgets`, `POST /widgets`, `GET /widgets/{widget}`, `POST /widgets/{widget}/activate`, `POST /widgets/{widget}/deactivate`).
 
 ### Widget versions
 

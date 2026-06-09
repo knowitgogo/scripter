@@ -6,6 +6,7 @@ namespace Tests\Concerns;
 
 use App\Models\User;
 use App\Models\Widget;
+use App\Models\WidgetVersion;
 
 /**
  * Widget API helpers for feature and integration tests.
@@ -30,5 +31,13 @@ trait InteractsWithWidgets
         unset($user);
 
         return Widget::factory()->create($attributes);
+    }
+
+    protected function createDraftWidgetWithPublishedVersion(array $widgetAttributes = []): Widget
+    {
+        $widget = Widget::factory()->draft()->create($widgetAttributes);
+        WidgetVersion::factory()->for($widget)->release('1.0.0')->create();
+
+        return $widget;
     }
 }

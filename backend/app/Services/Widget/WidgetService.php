@@ -94,6 +94,72 @@ final class WidgetService
     }
 
     /**
+     * @throws ModelNotFoundException
+     * @throws DomainException
+     */
+    public function activate(string $widgetUuid, User $user): WidgetDTO
+    {
+        /** @var Widget $widget */
+        $widget = $this->widgets->findByUuidOrFail($widgetUuid);
+
+        if ($widget->status === WidgetStatus::Published) {
+            throw new DomainException('The widget is already active.', 422);
+        }
+
+        if ($this->widgetVersions->findPublishedForWidget($widget->id) === null) {
+            throw new DomainException('The widget cannot be activated without a published version.', 422);
+        }
+
+        $this->widgets->update($widget, ['status' => WidgetStatus::Published]);
+        $widget->refresh();
+
+        $this->auditDispatcher->dispatch(
+            GenericAuditEvent::record(
+                action: AuditAction::Published,
+                subjectType: 'widget',
+                subjectUuid: $widget->uuid,
+                actorUuid: $user->uuid,
+                metadata: ['slug' => $widget->slug],
+            ),
+        );
+
+        return WidgetDTO::fromModel($widget);
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DomainException
+     */
+    public function deactivate(string $widgetUuid, User $user): WidgetDTO
+    {
+        /** @var Widget $widget */
+        $widget = $this->widgets->findByUuidOrFail($widgetUuid);
+
+        if ($widget->status === WidgetStatus::Deprecated) {
+            throw new DomainException('The widget is already deactivated.', 422);
+        }
+
+        if ($widget->status === WidgetStatus::Draft) {
+            throw new DomainException('Draft widgets cannot be deactivated.', 422);
+        }
+
+        $this->widgets->update($widget, ['status' => WidgetStatus::Deprecated]);
+        $widget->refresh();
+
+        $this->auditDispatcher->dispatch(
+            GenericAuditEvent::record(
+                action: AuditAction::Deprecated,
+                subjectType: 'widget',
+                subjectUuid: $widget->uuid,
+                actorUuid: $user->uuid,
+                metadata: ['slug' => $widget->slug],
+            ),
+        );
+
+        return WidgetDTO::fromModel($widget);
+    }
+
+    /**
      * @return list<WidgetVersionDTO>
      *
      * @throws ModelNotFoundException

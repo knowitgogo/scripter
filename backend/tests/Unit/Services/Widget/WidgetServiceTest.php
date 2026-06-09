@@ -176,6 +176,59 @@ final class WidgetServiceTest extends TestCase
     }
 
     #[Test]
+    public function it_activates_draft_widget_when_published_version_exists(): void
+    {
+        $user = User::factory()->create();
+        $widget = Widget::factory()->draft()->create(['slug' => 'feedback-form']);
+        WidgetVersion::factory()->for($widget)->release('1.0.0')->create();
+
+        $dto = $this->service->activate($widget->uuid, $user);
+
+        $this->assertSame(WidgetStatus::Published, $dto->status);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Published->value,
+            'subject_uuid' => $widget->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_deactivates_published_widget(): void
+    {
+        $user = User::factory()->create();
+        $widget = Widget::factory()->published()->create(['slug' => 'feedback-form']);
+
+        $dto = $this->service->deactivate($widget->uuid, $user);
+
+        $this->assertSame(WidgetStatus::Deprecated, $dto->status);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Deprecated->value,
+            'subject_uuid' => $widget->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_rejects_activation_without_published_version(): void
+    {
+        $widget = Widget::factory()->draft()->create(['slug' => 'no-version']);
+        $user = User::factory()->create();
+
+        $this->expectException(DomainException::class);
+
+        $this->service->activate($widget->uuid, $user);
+    }
+
+    #[Test]
+    public function it_rejects_deactivation_for_draft_widget(): void
+    {
+        $widget = Widget::factory()->draft()->create(['slug' => 'draft-widget']);
+        $user = User::factory()->create();
+
+        $this->expectException(DomainException::class);
+
+        $this->service->deactivate($widget->uuid, $user);
+    }
+
+    #[Test]
     public function it_throws_when_widget_is_not_found(): void
     {
         $this->expectException(ModelNotFoundException::class);
