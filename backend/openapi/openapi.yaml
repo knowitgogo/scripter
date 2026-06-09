@@ -747,6 +747,115 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
+  /widgets:
+    get:
+      operationId: listWidgets
+      tags:
+        - Widgets
+      summary: List published widgets
+      description: |
+        Returns published marketplace widgets ordered by name.
+        Optionally filter by a case-insensitive search term matching name or slug.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          description: Filter widgets by name or slug substring
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+            example: feedback
+      responses:
+        '200':
+          description: Widget catalog collection
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Widget'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing widgets.view permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+  /widgets/{widget}:
+    get:
+      operationId: showWidget
+      tags:
+        - Widgets
+      summary: Get widget
+      description: Returns a published marketplace widget by UUID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: widget
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      responses:
+        '200':
+          description: Widget details
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Widget'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing widgets.view permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Widget not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /health:
     get:
       operationId: healthCheck
@@ -1038,6 +1147,15 @@ components:
             $ref: '#/components/schemas/Uuid'
           example:
             - 660e8400-e29b-41d4-a716-446655440001
+    ListWidgetCatalogQuery:
+      type: object
+      description: Query parameters for listing published widgets (`ListWidgetCatalogQueryDTO`)
+      properties:
+        search:
+          type: string
+          maxLength: 100
+          description: Case-insensitive substring match against widget name or slug
+          example: feedback
     Widget:
       type: object
       description: Marketplace catalog entry (`WidgetDTO`)

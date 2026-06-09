@@ -37,20 +37,27 @@ final class EloquentWidgetRepository extends UuidEloquentRepository implements W
     /**
      * @return Collection<int, Widget>
      */
-    public function listPublishedOrderedByName(): Collection
+    public function listPublishedOrderedByName(?string $search = null): Collection
     {
-        return $this->listByStatus(WidgetStatus::Published);
+        return $this->listByStatus(WidgetStatus::Published, $search);
     }
 
     /**
      * @return Collection<int, Widget>
      */
-    public function listByStatus(WidgetStatus $status): Collection
+    public function listByStatus(WidgetStatus $status, ?string $search = null): Collection
     {
-        return $this->newModelQuery()
-            ->where('status', $status->value)
-            ->orderBy('name')
-            ->get();
+        $query = $this->newModelQuery()
+            ->where('status', $status->value);
+
+        if ($search !== null && $search !== '') {
+            $query->where(function ($builder) use ($search): void {
+                $builder->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('slug', 'like', '%'.$search.'%');
+            });
+        }
+
+        return $query->orderBy('name')->get();
     }
 
     protected function model(): string

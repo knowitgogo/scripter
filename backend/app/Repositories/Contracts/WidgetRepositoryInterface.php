@@ -20,7 +20,7 @@ interface WidgetRepositoryInterface extends UuidRepositoryInterface
     /**
      * @return Collection<int, Widget>
      */
-    public function listPublishedOrderedByName(): Collection;
+    public function listPublishedOrderedByName(?string $search = null): Collection;
 
     /**
      * @return Collection<int, Widget>

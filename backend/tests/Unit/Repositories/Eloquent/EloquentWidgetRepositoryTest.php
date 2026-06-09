@@ -65,4 +65,17 @@ final class EloquentWidgetRepositoryTest extends TestCase
         $this->assertCount(1, $repository->listByStatus(WidgetStatus::Deprecated));
         $this->assertCount(1, $repository->listByStatus(WidgetStatus::Draft));
     }
+
+    #[Test]
+    public function it_filters_published_widgets_by_search_term(): void
+    {
+        Widget::factory()->published()->create(['name' => 'Feedback Form', 'slug' => 'feedback-form']);
+        Widget::factory()->published()->create(['name' => 'Newsletter Signup', 'slug' => 'newsletter-signup']);
+
+        $repository = new EloquentWidgetRepository;
+
+        $this->assertCount(1, $repository->listPublishedOrderedByName('feedback'));
+        $this->assertSame('Feedback Form', $repository->listPublishedOrderedByName('feedback')->first()->name);
+        $this->assertCount(2, $repository->listPublishedOrderedByName());
+    }
 }

@@ -608,19 +608,22 @@ Marketplace catalog widgets are persisted as public UUID entities with lifecycle
 | Status enum | `app/Enums/WidgetStatus.php` (`draft`, `published`, `deprecated`) |
 | Factory | `database/factories/WidgetFactory.php` |
 | Repository | `WidgetRepositoryInterface` → `EloquentWidgetRepository` |
-| DTO | `app/DTOs/Widget/WidgetDTO.php` |
-| Service | `app/Services/Widget/WidgetCatalogService.php` |
+| DTO | `app/DTOs/Widget/WidgetDTO.php`, `app/DTOs/Widget/ListWidgetCatalogQueryDTO.php` |
+| Service | `app/Services/Widget/WidgetService.php` (catalog); `WidgetCatalogService` and `WidgetVersionService` remain for focused use |
 
 **Table:** `widgets` — `uuid`, `name`, `slug` (unique), `description`, `status`, timestamps.
 
 **Repository methods:** `findBySlug`, `listPublishedOrderedByName`, `listByStatus`, plus UUID lookups from `UuidRepositoryInterface`.
 
-Bind `WidgetRepositoryInterface` in `RepositoryServiceProvider`. `WidgetCatalogService` maps `Widget` models to `WidgetDTO`.
+Bind `WidgetRepositoryInterface` in `RepositoryServiceProvider`. `WidgetService` maps `Widget` and `WidgetVersion` models to DTOs.
 
 ```
-WidgetCatalogService::listPublished() → list<WidgetDTO>
-WidgetCatalogService::getByUuid(uuid) → WidgetDTO
-WidgetCatalogService::getBySlug(slug) → WidgetDTO
+WidgetService::listPublished(?ListWidgetCatalogQueryDTO) → list<WidgetDTO>
+WidgetService::getByUuid(uuid) → WidgetDTO
+WidgetService::getBySlug(slug) → WidgetDTO
+WidgetService::listVersionsForWidget(widgetUuid) → list<WidgetVersionDTO>
+WidgetService::listPublishedVersionsForWidget(widgetUuid) → list<WidgetVersionDTO>
+WidgetService::getVersionByUuid(uuid) → WidgetVersionDTO
 ```
 
 **Tests:** Run the Widget suite with `composer test:widget`.
@@ -628,12 +631,12 @@ WidgetCatalogService::getBySlug(slug) → WidgetDTO
 | Layer | Path |
 |-------|------|
 | OpenAPI contract | `tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php` |
-| Service | `tests/Unit/Services/Widget/WidgetCatalogServiceTest.php` |
-| DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php` |
+| Service | `tests/Unit/Services/Widget/WidgetServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php`, `tests/Unit/DTOs/Widget/ListWidgetCatalogQueryDTOTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WidgetModelTest.php`, `tests/Unit/Database/WidgetsMigrationTest.php` |
 
-OpenAPI schema: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`; HTTP catalog endpoints planned separately).
+OpenAPI schema and paths: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`, `ListWidgetCatalogQuery`, `GET /widgets`, `GET /widgets/{widget}`).
 
 ### Widget versions
 
