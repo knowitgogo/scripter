@@ -547,8 +547,10 @@ websites ← website_tags → tags (uuid)
 | Models | `app/Models/Tag.php`, `app/Models/WebsiteTag.php` (pivot) |
 | Factory | `database/factories/TagFactory.php` |
 | Repositories | `TagRepositoryInterface` → `EloquentTagRepository`; `WebsiteTagRepositoryInterface` → `EloquentWebsiteTagRepository` |
-| DTOs | `app/DTOs/Tag/TagDTO.php`, `app/DTOs/Website/WebsiteTagsDTO.php`, `SyncWebsiteTagsDTO.php` |
-| Services | `app/Services/Tag/TagService.php`, `app/Services/Website/WebsiteTagService.php` |
+| DTOs | `app/DTOs/Tag/TagDTO.php`, `CreateTagDTO.php`, `UpdateTagDTO.php`, `app/DTOs/Website/WebsiteTagsDTO.php`, `SyncWebsiteTagsDTO.php` |
+| Service | `app/Services/Tag/TagService.php`, `app/Services/Website/WebsiteTagService.php` |
+| Controllers | `app/Http/Controllers/Api/V1/Tag/` |
+| Form Requests | `app/Http/Requests/Tag/` |
 
 **Tables:** `tags` — `uuid`, `name`, `slug` (unique), timestamps. `website_tags` — `website_id`, `tag_id` (unique pair), timestamps.
 
@@ -568,19 +570,32 @@ TagService::detach(websiteUuid, tagUuid, user) → WebsiteTagsDTO
 TagService::sync(websiteUuid, SyncWebsiteTagsDTO, user) → WebsiteTagsDTO
 ```
 
+**HTTP routes** (`routes/api/v1.php`):
+
+| Method | Path | Permission |
+|--------|------|------------|
+| GET | `/tags` | `tags.view` |
+| POST | `/tags` | `tags.manage` |
+| GET | `/tags/{uuid}` | `tags.view` |
+| PUT | `/tags/{uuid}` | `tags.manage` |
+| DELETE | `/tags/{uuid}` | `tags.manage` |
+
 **Tests:** Run the Tags suite with `composer test:tags`.
 
 | Layer | Path |
 |-------|------|
+| CRUD flow | `tests/Feature/Tag/TagCrudFlowTest.php` |
+| Endpoints | `tests/Feature/Api/V1/Tag/*EndpointTest.php` |
+| Authorization | `tests/Feature/Api/V1/Tag/TagAuthorizationEndpointTest.php` |
 | OpenAPI contract | `tests/Contract/OpenApi/TagOpenApiSpecTest.php` |
 | Service | `tests/Unit/Services/Tag/TagServiceTest.php` |
-| DTO | `tests/Unit/DTOs/Tag/TagDTOTest.php` |
+| DTO | `tests/Unit/DTOs/Tag/` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentTagRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/TagModelTest.php`, `tests/Unit/Database/TagsMigrationTest.php` |
 | Website tags | `tests/Feature/Models/WebsiteTagRelationshipTest.php`, `tests/Unit/Database/WebsiteTagsMigrationTest.php` |
 | Website tag service | `tests/Unit/Services/Website/WebsiteTagServiceTest.php` |
 
-OpenAPI schemas: `openapi/openapi.yaml` (`Tag`, `WebsiteTags`, `SyncWebsiteTagsRequest`; HTTP endpoints planned separately).
+OpenAPI paths and schemas: `openapi/openapi.yaml` (`/tags`, `/tags/{tag}`, `Tag`, `CreateTagRequest`, `UpdateTagRequest`).
 
 ## Permissions architecture
 

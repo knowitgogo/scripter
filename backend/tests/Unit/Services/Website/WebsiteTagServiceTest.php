@@ -12,6 +12,7 @@ use App\Models\Website;
 use App\Repositories\Eloquent\EloquentTagRepository;
 use App\Repositories\Eloquent\EloquentWebsiteRepository;
 use App\Repositories\Eloquent\EloquentWebsiteTagRepository;
+use App\Services\Audit\AuditDispatcher;
 use App\Services\Tag\TagService;
 use App\Services\Website\WebsiteTagService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -29,10 +30,13 @@ final class WebsiteTagServiceTest extends TestCase
     {
         parent::setUp();
 
+        config(['audit.enabled' => true, 'audit.async' => false]);
+
         $tagService = new TagService(
             new EloquentTagRepository,
             new EloquentWebsiteTagRepository,
             new EloquentWebsiteRepository,
+            app(AuditDispatcher::class),
         );
 
         $this->service = new WebsiteTagService($tagService);

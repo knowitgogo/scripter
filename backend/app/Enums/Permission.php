@@ -11,6 +11,8 @@ enum Permission: string
 {
     case WebsitesView = 'websites.view';
     case WebsitesManage = 'websites.manage';
+    case TagsView = 'tags.view';
+    case TagsManage = 'tags.manage';
     case WidgetsView = 'widgets.view';
     case WidgetsInstall = 'widgets.install';
     case AnalyticsView = 'analytics.view';

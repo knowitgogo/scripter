@@ -14,6 +14,11 @@ use App\Http\Controllers\Api\V1\Website\IndexWebsitesController;
 use App\Http\Controllers\Api\V1\Website\ShowWebsiteController;
 use App\Http\Controllers\Api\V1\Website\StoreWebsiteController;
 use App\Http\Controllers\Api\V1\Website\UpdateWebsiteController;
+use App\Http\Controllers\Api\V1\Tag\DestroyTagController;
+use App\Http\Controllers\Api\V1\Tag\IndexTagsController;
+use App\Http\Controllers\Api\V1\Tag\ShowTagController;
+use App\Http\Controllers\Api\V1\Tag\StoreTagController;
+use App\Http\Controllers\Api\V1\Tag\UpdateTagController;
 use App\Enums\Permission;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +48,17 @@ Route::middleware(['auth:api', 'permission:'.Permission::WebsitesManage->value])
     Route::post('websites', StoreWebsiteController::class)->name('websites.store');
     Route::put('websites/{website}', UpdateWebsiteController::class)->name('websites.update');
     Route::delete('websites/{website}', DestroyWebsiteController::class)->name('websites.destroy');
+});
+
+Route::middleware(['auth:api', 'permission:'.Permission::TagsView->value])->group(function (): void {
+    Route::get('tags', IndexTagsController::class)->name('tags.index');
+    Route::get('tags/{tag}', ShowTagController::class)->name('tags.show');
+});
+
+Route::middleware(['auth:api', 'permission:'.Permission::TagsManage->value])->group(function (): void {
+    Route::post('tags', StoreTagController::class)->name('tags.store');
+    Route::put('tags/{tag}', UpdateTagController::class)->name('tags.update');
+    Route::delete('tags/{tag}', DestroyTagController::class)->name('tags.destroy');
 });
 
 Route::get('health', HealthController::class)->name('health');

@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Tag;
 
+use App\DTOs\Tag\CreateTagDTO;
+use App\DTOs\Tag\UpdateTagDTO;
 use App\DTOs\Website\SyncWebsiteTagsDTO;
+use App\Enums\AuditAction;
+use App\Exceptions\DomainException;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
@@ -12,6 +16,7 @@ use App\Models\Website;
 use App\Repositories\Eloquent\EloquentTagRepository;
 use App\Repositories\Eloquent\EloquentWebsiteRepository;
 use App\Repositories\Eloquent\EloquentWebsiteTagRepository;
+use App\Services\Audit\AuditDispatcher;
 use App\Services\Tag\TagService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,10 +33,13 @@ final class TagServiceTest extends TestCase
     {
         parent::setUp();
 
+        config(['audit.enabled' => true, 'audit.async' => false]);
+
         $this->service = new TagService(
             new EloquentTagRepository,
             new EloquentWebsiteTagRepository,
             new EloquentWebsiteRepository,
+            app(AuditDispatcher::class),
         );
     }
 
@@ -142,6 +150,75 @@ final class TagServiceTest extends TestCase
         $this->expectException(ModelNotFoundException::class);
 
         $this->service->listForWebsite($website->uuid, $otherUser);
+    }
+
+    #[Test]
+    public function it_creates_tag_and_records_audit(): void
+    {
+        $role = Role::factory()->customer()->create();
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $dto = $this->service->create(new CreateTagDTO(
+            name: 'Analytics',
+            slug: 'analytics',
+        ), $user);
+
+        $this->assertSame('analytics', $dto->slug);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Created->value,
+            'subject_type' => 'tag',
+            'subject_uuid' => $dto->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_throws_when_create_slug_is_taken(): void
+    {
+        Tag::factory()->create(['slug' => 'marketing']);
+        $role = Role::factory()->customer()->create();
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $this->expectException(DomainException::class);
+
+        $this->service->create(new CreateTagDTO(
+            name: 'Marketing',
+            slug: 'marketing',
+        ), $user);
+    }
+
+    #[Test]
+    public function it_updates_tag_and_records_audit(): void
+    {
+        $role = Role::factory()->customer()->create();
+        $user = User::factory()->create(['role_id' => $role->id]);
+        $tag = Tag::factory()->marketing()->create();
+
+        $dto = $this->service->update($tag->uuid, new UpdateTagDTO(
+            name: 'Growth Marketing',
+            slug: 'growth-marketing',
+        ), $user);
+
+        $this->assertSame('growth-marketing', $dto->slug);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Updated->value,
+            'subject_uuid' => $tag->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_deletes_tag_and_records_audit(): void
+    {
+        $role = Role::factory()->customer()->create();
+        $user = User::factory()->create(['role_id' => $role->id]);
+        $tag = Tag::factory()->marketing()->create();
+
+        $this->service->delete($tag->uuid, $user);
+
+        $this->assertDatabaseMissing('tags', ['uuid' => $tag->uuid]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Deleted->value,
+            'subject_uuid' => $tag->uuid,
+        ]);
     }
 
     /**

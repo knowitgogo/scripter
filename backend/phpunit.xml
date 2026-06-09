@@ -43,10 +43,13 @@
         <testsuite name="Tags">
             <directory>tests/Unit/Services/Tag</directory>
             <directory>tests/Unit/DTOs/Tag</directory>
+            <directory>tests/Feature/Tag</directory>
+            <directory>tests/Feature/Api/V1/Tag</directory>
             <file>tests/Contract/OpenApi/TagOpenApiSpecTest.php</file>
             <file>tests/Unit/Database/TagsMigrationTest.php</file>
             <file>tests/Feature/Models/TagModelTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentTagRepositoryTest.php</file>
+            <file>tests/Concerns/InteractsWithTags.php</file>
         </testsuite>
     </testsuites>
     <source>

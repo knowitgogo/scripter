@@ -20,6 +20,8 @@ return [
         'customer' => [
             Permission::WebsitesView->value,
             Permission::WebsitesManage->value,
+            Permission::TagsView->value,
+            Permission::TagsManage->value,
             Permission::WidgetsView->value,
             Permission::WidgetsInstall->value,
             Permission::AnalyticsView->value,
@@ -28,6 +30,8 @@ return [
         'admin' => [
             Permission::WebsitesView->value,
             Permission::WebsitesManage->value,
+            Permission::TagsView->value,
+            Permission::TagsManage->value,
             Permission::WidgetsView->value,
             Permission::WidgetsInstall->value,
             Permission::AnalyticsView->value,

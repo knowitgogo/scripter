@@ -24,9 +24,9 @@ tags:
       require `websites.manage`. All operations are scoped to the authenticated user.
   - name: Tags
     description: |
-      Reusable labels attachable to multiple websites via the `website_tags` pivot.
-      `TagService` provides catalog lookups plus attach, detach, and sync for owned
-      websites. HTTP endpoints are planned separately from website CRUD.
+      Reusable tag catalog CRUD and website attachments via the `website_tags` pivot.
+      Read routes require `tags.view`; write routes require `tags.manage`.
+      `TagService` provides catalog lookups plus attach, detach, and sync for owned websites.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -476,6 +476,251 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
+  /tags:
+    get:
+      operationId: listTags
+      tags:
+        - Tags
+      summary: List tags
+      description: Returns reusable tags ordered by name.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Tag collection
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing tags.view permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+    post:
+      operationId: createTag
+      tags:
+        - Tags
+      summary: Create tag
+      description: Creates a reusable tag in the catalog.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagRequest'
+      responses:
+        '201':
+          description: Tag created
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing tags.manage permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+  /tags/{tag}:
+    get:
+      operationId: showTag
+      tags:
+        - Tags
+      summary: Get tag
+      description: Returns a single tag by public UUID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      responses:
+        '200':
+          description: Tag details
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing tags.view permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Tag not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+    put:
+      operationId: updateTag
+      tags:
+        - Tags
+      summary: Update tag
+      description: Updates a reusable tag in the catalog.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTagRequest'
+      responses:
+        '200':
+          description: Tag updated
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing tags.manage permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Tag not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+    delete:
+      operationId: deleteTag
+      tags:
+        - Tags
+      summary: Delete tag
+      description: Deletes a reusable tag from the catalog.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      responses:
+        '204':
+          description: Tag deleted
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing tags.manage permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Tag not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /health:
     get:
       operationId: healthCheck
@@ -724,6 +969,38 @@ components:
         updated_at:
           type: string
           format: date-time
+    CreateTagRequest:
+      type: object
+      description: Payload for creating a tag (`CreateTagDTO`)
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Marketing
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: marketing
+    UpdateTagRequest:
+      type: object
+      description: Payload for updating a tag (`UpdateTagDTO`)
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Marketing
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: marketing
     CreateWebsiteRequest:
       type: object
       description: Payload for creating a website (`CreateWebsiteDTO`)
@@ -841,6 +1118,8 @@ components:
       enum:
         - websites.view
         - websites.manage
+        - tags.view
+        - tags.manage
         - widgets.view
         - widgets.install
         - analytics.view
