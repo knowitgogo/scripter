@@ -94,7 +94,33 @@ tests/{Unit,Feature,Contract}/
 
 ## API versioning
 
-All endpoints are under `/api/v1`. Routes are defined in `routes/api.php`.
+Versioning is config-driven via `config/api.php`:
+
+| Setting | Default | Purpose |
+|---------|---------|---------|
+| `api.prefix` | `api` | Global route prefix (`bootstrap/app.php`) |
+| `api.default_version` | `v1` | Active API version |
+| `api.supported_versions` | `v1` | Registered versions |
+| `api.version_header` | `X-API-Version` | Response header on versioned routes |
+
+**URL structure:**
+
+```
+/api/{version}/{resource}     # versioned domain endpoints
+/api/openapi.yaml             # unversioned meta
+/api/docs                     # unversioned Swagger UI
+```
+
+**Route registration:** `routes/api.php` loads `routes/api/{version}.php` for each supported version. Controllers live under `App\Http\Controllers\Api\{Version}`.
+
+**Adding v2 later:**
+
+1. Create `routes/api/v2.php`
+2. Add `v2` to `API_SUPPORTED_VERSIONS` in `.env`
+3. Add controllers under `App\Http\Controllers\Api\V2`
+4. Extend `openapi/openapi.yaml` with v2 server entry
+
+All versioned responses include the `X-API-Version` header via `SetApiVersionHeader` middleware.
 
 | Endpoint | Description |
 |----------|-------------|

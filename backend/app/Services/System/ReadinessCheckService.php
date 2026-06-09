@@ -6,6 +6,7 @@ namespace App\Services\System;
 
 use App\DTOs\System\ReadinessStatusDTO;
 use App\Repositories\Contracts\InfrastructureProbeRepositoryInterface;
+use App\Support\ApiVersion;
 
 /**
  * Readiness check — verifies infrastructure dependencies are available.
@@ -16,7 +17,7 @@ final class ReadinessCheckService
         private readonly InfrastructureProbeRepositoryInterface $probes,
     ) {}
 
-    public function check(string $version = 'v1'): ReadinessStatusDTO
+    public function check(?string $version = null): ReadinessStatusDTO
     {
         $checks = [
             'database' => $this->probes->isDatabaseReachable() ? 'ok' : 'fail',
@@ -27,6 +28,6 @@ final class ReadinessCheckService
             $checks['redis'] = $this->probes->isRedisReachable() ? 'ok' : 'fail';
         }
 
-        return ReadinessStatusDTO::fromChecks($checks, $version);
+        return ReadinessStatusDTO::fromChecks($checks, $version ?? ApiVersion::default());
     }
 }

@@ -22,6 +22,12 @@ paths:
       responses:
         '200':
           description: Service is alive
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
           content:
             application/json:
               schema:

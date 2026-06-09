@@ -2,13 +2,29 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\V1\HealthController;
-use App\Http\Controllers\Api\V1\ReadinessController;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Unversioned meta routes (OpenAPI, Swagger UI) load first. Versioned routes
+| are registered from routes/api/{version}.php per config/api.php.
+|
+*/
 
 require __DIR__.'/openapi.php';
 
-Route::prefix('v1')->group(function (): void {
-    Route::get('health', HealthController::class)->name('api.v1.health');
-    Route::get('ready', ReadinessController::class)->name('api.v1.ready');
-});
+foreach (config('api.supported_versions', ['v1']) as $version) {
+    $routeFile = __DIR__."/api/{$version}.php";
+
+    if (! is_file($routeFile)) {
+        continue;
+    }
+
+    Route::prefix($version)
+        ->middleware('api.version:'.$version)
+        ->name("api.{$version}.")
+        ->group($routeFile);
+}
