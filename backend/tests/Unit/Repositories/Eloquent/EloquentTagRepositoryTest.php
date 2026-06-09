@@ -9,6 +9,7 @@ use App\Repositories\Contracts\EloquentRepositoryInterface;
 use App\Repositories\Contracts\TagRepositoryInterface;
 use App\Repositories\Contracts\UuidRepositoryInterface;
 use App\Repositories\Eloquent\EloquentTagRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -49,5 +50,52 @@ final class EloquentTagRepositoryTest extends TestCase
 
         $this->assertSame('Alpha', $tags->first()->name);
         $this->assertSame('Zulu', $tags->last()->name);
+    }
+
+    #[Test]
+    public function find_by_slug_or_fail_throws_when_not_found(): void
+    {
+        $repository = new EloquentTagRepository;
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $repository->findBySlugOrFail('missing');
+    }
+
+    #[Test]
+    public function find_by_uuid_or_fail_throws_when_not_found(): void
+    {
+        $repository = new EloquentTagRepository;
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $repository->findByUuidOrFail('00000000-0000-0000-0000-000000000000');
+    }
+
+    #[Test]
+    public function it_creates_and_updates_tag(): void
+    {
+        $repository = new EloquentTagRepository;
+
+        /** @var Tag $tag */
+        $tag = $repository->create([
+            'name' => 'Analytics',
+            'slug' => 'analytics',
+        ]);
+
+        $this->assertSame('Analytics', $tag->name);
+        $this->assertNotEmpty($tag->uuid);
+
+        $repository->update($tag, ['name' => 'Web Analytics']);
+
+        $this->assertSame('Web Analytics', $tag->fresh()->name);
+    }
+
+    #[Test]
+    public function it_resolves_from_container_binding(): void
+    {
+        $repository = $this->app->make(TagRepositoryInterface::class);
+
+        $this->assertInstanceOf(EloquentTagRepository::class, $repository);
     }
 }
