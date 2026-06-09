@@ -36,6 +36,13 @@ final class OpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_defines_current_user_endpoint(): void
+    {
+        $this->assertStringContainsString('/me:', $this->specContents);
+        $this->assertStringContainsString('operationId: getCurrentUser', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_defines_refresh_token_endpoint(): void
     {
         $this->assertStringContainsString('/auth/refresh:', $this->specContents);

@@ -127,6 +127,7 @@ All versioned responses include the `X-API-Version` header via `SetApiVersionHea
 | `POST /api/v1/auth/login` | Authenticate with email/password; returns JWT |
 | `POST /api/v1/auth/refresh` | Issue new JWT within refresh window (requires Bearer token) |
 | `POST /api/v1/auth/logout` | Invalidate current JWT (requires Bearer token) |
+| `GET /api/v1/me` | Current authenticated user profile (requires Bearer token) |
 | `GET /api/v1/health` | Liveness probe — process is running |
 | `GET /api/v1/ready` | Readiness probe — database and cache are reachable |
 | `GET /api/openapi.yaml` | Raw OpenAPI 3.1 specification (YAML) |
@@ -427,6 +428,24 @@ RefreshTokenRequest → TokenRefreshService → JWT refresh + UserRepository sta
 **Rules:** previous token is blacklisted; only `active` users receive a new token; suspended/pending accounts return 403.
 
 **Tests:** `tests/Feature/Api/V1/Auth/RefreshTokenEndpointTest.php`, `tests/Unit/Services/Auth/TokenRefreshServiceTest.php`.
+
+## Current user endpoint
+
+`GET /api/v1/me` returns the authenticated user's `UserDTO` (UUID, profile, role).
+
+```
+CurrentUserRequest → CurrentUserService → UserRepository → UserDTO
+```
+
+| Component | Location |
+|-----------|----------|
+| Controller | `app/Http/Controllers/Api/V1/Auth/MeController.php` |
+| Form Request | `app/Http/Requests/Auth/CurrentUserRequest.php` |
+| Service | `app/Services/Auth/CurrentUserService.php` |
+
+**Auth:** `auth:api` middleware required.
+
+**Tests:** `tests/Feature/Api/V1/Auth/MeEndpointTest.php`, `tests/Unit/Services/Auth/CurrentUserServiceTest.php`.
 
 ## Role assignment service
 
