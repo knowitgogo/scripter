@@ -180,7 +180,18 @@ final class FolderStructureTest extends TestCase
             $app.'/Repositories/Eloquent/EloquentWebsiteRepository.php',
             $app.'/DTOs/Website/WebsiteDTO.php',
             $app.'/DTOs/Website/CreateWebsiteDTO.php',
+            $app.'/DTOs/Website/UpdateWebsiteDTO.php',
             $app.'/Services/Website/WebsiteService.php',
+            $app.'/Http/Controllers/Api/V1/Website/IndexWebsitesController.php',
+            $app.'/Http/Controllers/Api/V1/Website/StoreWebsiteController.php',
+            $app.'/Http/Controllers/Api/V1/Website/ShowWebsiteController.php',
+            $app.'/Http/Controllers/Api/V1/Website/UpdateWebsiteController.php',
+            $app.'/Http/Controllers/Api/V1/Website/DestroyWebsiteController.php',
+            $app.'/Http/Requests/Website/ListWebsitesRequest.php',
+            $app.'/Http/Requests/Website/CreateWebsiteRequest.php',
+            $app.'/Http/Requests/Website/ShowWebsiteRequest.php',
+            $app.'/Http/Requests/Website/UpdateWebsiteRequest.php',
+            $app.'/Http/Requests/Website/DestroyWebsiteRequest.php',
             dirname(__DIR__, 3).'/database/factories/WebsiteFactory.php',
             dirname(__DIR__, 3).'/database/migrations/2026_06_08_160000_create_websites_table.php',
             $tests.'/Unit/Database/WebsitesMigrationTest.php',
@@ -190,6 +201,7 @@ final class FolderStructureTest extends TestCase
             $tests.'/Unit/DTOs/Website/WebsiteDTOTest.php',
             $tests.'/Unit/DTOs/Website/CreateWebsiteDTOTest.php',
             $tests.'/Unit/Services/Website/WebsiteServiceTest.php',
+            $tests.'/Feature/Api/V1/Website/WebsiteCrudEndpointTest.php',
         ];
 
         foreach ($files as $file) {

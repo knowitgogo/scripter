@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\Website;
 
 use App\DTOs\Website\CreateWebsiteDTO;
+use App\DTOs\Website\UpdateWebsiteDTO;
 use App\Enums\AuditAction;
 use App\Enums\WebsiteStatus;
 use App\Exceptions\DomainException;
@@ -145,6 +146,44 @@ final class WebsiteServiceTest extends TestCase
         $this->expectException(ModelNotFoundException::class);
 
         $this->service->getForUser($website->uuid, $user);
+    }
+
+    #[Test]
+    public function it_updates_website_for_owner(): void
+    {
+        $user = $this->createUser();
+        $website = Website::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Old Name',
+            'url' => 'https://old.example.com',
+        ]);
+
+        $dto = $this->service->update($website->uuid, new UpdateWebsiteDTO(
+            name: 'New Name',
+            url: 'https://new.example.com',
+        ), $user);
+
+        $this->assertSame('New Name', $dto->name);
+        $this->assertSame('https://new.example.com', $dto->url);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Updated->value,
+            'subject_uuid' => $website->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_deletes_website_for_owner(): void
+    {
+        $user = $this->createUser();
+        $website = Website::factory()->create(['user_id' => $user->id]);
+
+        $this->service->delete($website->uuid, $user);
+
+        $this->assertDatabaseMissing('websites', ['uuid' => $website->uuid]);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Deleted->value,
+            'subject_uuid' => $website->uuid,
+        ]);
     }
 
     private function createUser(): User

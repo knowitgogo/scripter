@@ -20,9 +20,8 @@ tags:
       when the user lacks the required permission.
   - name: Websites
     description: |
-      Customer-owned websites. `WebsiteService` provides create, list, and get operations
-      scoped to the authenticated user. Each website belongs to a user and is identified
-      by a public UUID. Data access uses `WebsiteRepositoryInterface`.
+      Customer-owned website CRUD. Read routes require `websites.view`; write routes
+      require `websites.manage`. All operations are scoped to the authenticated user.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -227,6 +226,221 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
+  /websites:
+    get:
+      operationId: listWebsites
+      tags:
+        - Websites
+      summary: List owned websites
+      description: Returns websites owned by the authenticated user, ordered by name.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Website collection
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Website'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing websites.view permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+    post:
+      operationId: createWebsite
+      tags:
+        - Websites
+      summary: Create website
+      description: Creates a website owned by the authenticated user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebsiteRequest'
+      responses:
+        '201':
+          description: Website created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Website'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing websites.manage permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+  /websites/{website}:
+    get:
+      operationId: showWebsite
+      tags:
+        - Websites
+      summary: Get website
+      description: Returns a single website owned by the authenticated user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: website
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      responses:
+        '200':
+          description: Website details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Website'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing websites.view permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Website not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+    put:
+      operationId: updateWebsite
+      tags:
+        - Websites
+      summary: Update website
+      description: Updates a website owned by the authenticated user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: website
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWebsiteRequest'
+      responses:
+        '200':
+          description: Website updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Website'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing websites.manage permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Website not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+    delete:
+      operationId: deleteWebsite
+      tags:
+        - Websites
+      summary: Delete website
+      description: Deletes a website owned by the authenticated user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: website
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      responses:
+        '204':
+          description: Website deleted
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing websites.manage permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Website not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /health:
     get:
       operationId: healthCheck
@@ -427,6 +641,22 @@ components:
     CreateWebsiteRequest:
       type: object
       description: Payload for creating a website (`CreateWebsiteDTO`)
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          example: Acme Marketing Site
+        url:
+          type: string
+          format: uri
+          maxLength: 2048
+          example: https://www.example.com
+    UpdateWebsiteRequest:
+      type: object
+      description: Payload for updating a website (`UpdateWebsiteDTO`)
       required:
         - name
         - url

@@ -482,8 +482,10 @@ users (uuid) ← websites.user_id (internal FK, hidden from API)
 | Status enum | `app/Enums/WebsiteStatus.php` (`active`, `inactive`, `suspended`) |
 | Factory | `database/factories/WebsiteFactory.php` |
 | Repository | `WebsiteRepositoryInterface` → `EloquentWebsiteRepository` |
-| DTOs | `app/DTOs/Website/WebsiteDTO.php`, `CreateWebsiteDTO.php` |
+| DTOs | `app/DTOs/Website/WebsiteDTO.php`, `CreateWebsiteDTO.php`, `UpdateWebsiteDTO.php` |
 | Service | `app/Services/Website/WebsiteService.php` |
+| Controllers | `app/Http/Controllers/Api/V1/Website/` |
+| Form Requests | `app/Http/Requests/Website/` |
 
 **Table:** `websites` — `uuid`, `user_id`, `name`, `url` (unique), `status`, timestamps.
 
@@ -502,11 +504,21 @@ CreateWebsiteDTO + User
 
 User → WebsiteService::listForUser() → list<WebsiteDTO>
 User + website uuid → WebsiteService::getForUser() → WebsiteDTO
+User + website uuid → WebsiteService::update() → WebsiteDTO
+User + website uuid → WebsiteService::delete()
 ```
 
-**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`, `tests/Unit/DTOs/Website/WebsiteDTOTest.php`, `tests/Unit/DTOs/Website/CreateWebsiteDTOTest.php`, `tests/Unit/Services/Website/WebsiteServiceTest.php`.
+**HTTP routes** (`routes/api/v1.php`):
 
-HTTP endpoints (`GET/POST /websites`) are planned in subsequent tasks.
+| Method | Path | Permission |
+|--------|------|------------|
+| GET | `/websites` | `websites.view` |
+| POST | `/websites` | `websites.manage` |
+| GET | `/websites/{uuid}` | `websites.view` |
+| PUT | `/websites/{uuid}` | `websites.manage` |
+| DELETE | `/websites/{uuid}` | `websites.manage` |
+
+**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`, `tests/Unit/DTOs/Website/WebsiteDTOTest.php`, `tests/Unit/DTOs/Website/CreateWebsiteDTOTest.php`, `tests/Unit/Services/Website/WebsiteServiceTest.php`, `tests/Feature/Api/V1/Website/WebsiteCrudEndpointTest.php`.
 
 ## Permissions architecture
 

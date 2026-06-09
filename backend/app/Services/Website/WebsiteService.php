@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Website;
 
 use App\DTOs\Website\CreateWebsiteDTO;
+use App\DTOs\Website\UpdateWebsiteDTO;
 use App\DTOs\Website\WebsiteDTO;
 use App\Enums\AuditAction;
 use App\Enums\WebsiteStatus;
@@ -79,5 +80,77 @@ final class WebsiteService
         );
 
         return WebsiteDTO::fromModel($website);
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DomainException
+     */
+    public function update(string $websiteUuid, UpdateWebsiteDTO $payload, User $user): WebsiteDTO
+    {
+        $website = $this->findOwnedWebsiteOrFail($websiteUuid, $user);
+
+        if ($this->urlIsTakenByAnotherWebsite($payload->url, $website->uuid)) {
+            throw new DomainException('The url has already been taken.', 422);
+        }
+
+        $this->websites->update($website, [
+            'name' => $payload->name,
+            'url' => $payload->url,
+        ]);
+
+        $website->refresh();
+
+        $this->auditDispatcher->dispatch(
+            GenericAuditEvent::record(
+                action: AuditAction::Updated,
+                subjectType: 'website',
+                subjectUuid: $website->uuid,
+                actorUuid: $user->uuid,
+                metadata: ['url' => $website->url],
+            ),
+        );
+
+        return WebsiteDTO::fromModel($website);
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     */
+    public function delete(string $websiteUuid, User $user): void
+    {
+        $website = $this->findOwnedWebsiteOrFail($websiteUuid, $user);
+
+        $this->websites->delete($website);
+
+        $this->auditDispatcher->dispatch(
+            GenericAuditEvent::record(
+                action: AuditAction::Deleted,
+                subjectType: 'website',
+                subjectUuid: $websiteUuid,
+                actorUuid: $user->uuid,
+            ),
+        );
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     */
+    private function findOwnedWebsiteOrFail(string $websiteUuid, User $user): Website
+    {
+        $website = $this->websites->findByUuidForUser($websiteUuid, $user->id);
+
+        if ($website === null) {
+            throw (new ModelNotFoundException)->setModel(Website::class);
+        }
+
+        return $website;
+    }
+
+    private function urlIsTakenByAnotherWebsite(string $url, string $websiteUuid): bool
+    {
+        $existing = $this->websites->findByUrl($url);
+
+        return $existing !== null && $existing->uuid !== $websiteUuid;
     }
 }
