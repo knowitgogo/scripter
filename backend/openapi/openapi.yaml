@@ -396,7 +396,7 @@ components:
       example: 550e8400-e29b-41d4-a716-446655440000
     Website:
       type: object
-      description: Customer-owned website (reference schema for future endpoints)
+      description: Public website response (`WebsiteDTO`)
       required:
         - uuid
         - name
@@ -424,6 +424,22 @@ components:
         updated_at:
           type: string
           format: date-time
+    CreateWebsiteRequest:
+      type: object
+      description: Payload for creating a website (`CreateWebsiteDTO`)
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          example: Acme Marketing Site
+        url:
+          type: string
+          format: uri
+          maxLength: 2048
+          example: https://www.example.com
     WebsiteStatus:
       type: string
       description: Website lifecycle status

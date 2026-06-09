@@ -178,12 +178,16 @@ final class FolderStructureTest extends TestCase
             $app.'/Models/Website.php',
             $app.'/Repositories/Contracts/WebsiteRepositoryInterface.php',
             $app.'/Repositories/Eloquent/EloquentWebsiteRepository.php',
+            $app.'/DTOs/Website/WebsiteDTO.php',
+            $app.'/DTOs/Website/CreateWebsiteDTO.php',
             dirname(__DIR__, 3).'/database/factories/WebsiteFactory.php',
             dirname(__DIR__, 3).'/database/migrations/2026_06_08_160000_create_websites_table.php',
             $tests.'/Unit/Database/WebsitesMigrationTest.php',
             $tests.'/Unit/Enums/WebsiteStatusTest.php',
             $tests.'/Feature/Models/WebsiteModelTest.php',
             $tests.'/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php',
+            $tests.'/Unit/DTOs/Website/WebsiteDTOTest.php',
+            $tests.'/Unit/DTOs/Website/CreateWebsiteDTOTest.php',
         ];
 
         foreach ($files as $file) {

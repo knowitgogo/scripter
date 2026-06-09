@@ -482,6 +482,7 @@ users (uuid) ← websites.user_id (internal FK, hidden from API)
 | Status enum | `app/Enums/WebsiteStatus.php` (`active`, `inactive`, `suspended`) |
 | Factory | `database/factories/WebsiteFactory.php` |
 | Repository | `WebsiteRepositoryInterface` → `EloquentWebsiteRepository` |
+| DTOs | `app/DTOs/Website/WebsiteDTO.php`, `CreateWebsiteDTO.php` |
 
 **Table:** `websites` — `uuid`, `user_id`, `name`, `url` (unique), `status`, timestamps.
 
@@ -489,9 +490,9 @@ users (uuid) ← websites.user_id (internal FK, hidden from API)
 
 **Repository methods:** `findByUuid`, `findByUrl`, `listForUser`, `findByUuidForUser`, plus standard CRUD from `EloquentRepositoryInterface`.
 
-Bind `WebsiteRepositoryInterface` in `RepositoryServiceProvider`. Services map `Website` models to DTOs before returning to controllers.
+Bind `WebsiteRepositoryInterface` in `RepositoryServiceProvider`. Services map `Website` models to `WebsiteDTO` before returning to controllers. `CreateWebsiteDTO` maps validated Form Request input.
 
-**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`.
+**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`, `tests/Unit/DTOs/Website/WebsiteDTOTest.php`, `tests/Unit/DTOs/Website/CreateWebsiteDTOTest.php`.
 
 HTTP endpoints (`GET/POST /websites`) are planned in subsequent tasks.
 
