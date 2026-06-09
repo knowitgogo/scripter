@@ -40,4 +40,18 @@ trait InteractsWithWidgets
 
         return $widget;
     }
+
+    protected function createDraftWidgetVersion(
+        Widget $widget,
+        string $version = '1.0.0',
+        ?string $assetManifestUrl = 'https://cdn.example.com/widgets/manifest.json',
+    ): WidgetVersion {
+        return WidgetVersion::factory()
+            ->for($widget)
+            ->draft()
+            ->create([
+                'version' => $version,
+                'asset_manifest_url' => $assetManifestUrl,
+            ]);
+    }
 }

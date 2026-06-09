@@ -1026,6 +1026,124 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorEnvelope'
+  /widget-versions/{widget_version}/publish:
+    post:
+      operationId: publishWidgetVersion
+      tags:
+        - Widgets
+      summary: Publish widget version
+      description: |
+        Publishes a draft widget version and deprecates any previously published version
+        for the same widget. Requires an asset manifest URL. Requires `admin.widgets.publish`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: widget_version
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      responses:
+        '200':
+          description: Widget version published
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WidgetVersion'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing admin.widgets.publish permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Widget version not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Widget version cannot be published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+  /widget-versions/{widget_version}/deprecate:
+    post:
+      operationId: deprecateWidgetVersion
+      tags:
+        - Widgets
+      summary: Deprecate widget version
+      description: |
+        Deprecates a published widget version. Draft versions cannot be deprecated.
+        Requires `admin.widgets.publish`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: widget_version
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Uuid'
+      responses:
+        '200':
+          description: Widget version deprecated
+          headers:
+            X-API-Version:
+              description: Active API version
+              schema:
+                type: string
+                example: v1
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WidgetVersion'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '403':
+          description: Missing admin.widgets.publish permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '404':
+          description: Widget version not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
+        '422':
+          description: Widget version cannot be deprecated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorEnvelope'
   /health:
     get:
       operationId: healthCheck

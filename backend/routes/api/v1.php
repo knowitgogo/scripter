@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\V1\Tag\StoreTagController;
 use App\Http\Controllers\Api\V1\Tag\UpdateTagController;
 use App\Http\Controllers\Api\V1\Widget\ActivateWidgetController;
 use App\Http\Controllers\Api\V1\Widget\DeactivateWidgetController;
+use App\Http\Controllers\Api\V1\Widget\DeprecateWidgetVersionController;
+use App\Http\Controllers\Api\V1\Widget\PublishWidgetVersionController;
 use App\Http\Controllers\Api\V1\Widget\RegisterWidgetController;
 use App\Enums\Permission;
 use Illuminate\Support\Facades\Route;
@@ -68,6 +70,8 @@ Route::middleware(['auth:api', 'permission:'.Permission::AdminWidgetsPublish->va
     Route::post('widgets', RegisterWidgetController::class)->name('widgets.register');
     Route::post('widgets/{widget}/activate', ActivateWidgetController::class)->name('widgets.activate');
     Route::post('widgets/{widget}/deactivate', DeactivateWidgetController::class)->name('widgets.deactivate');
+    Route::post('widget-versions/{widget_version}/publish', PublishWidgetVersionController::class)->name('widget-versions.publish');
+    Route::post('widget-versions/{widget_version}/deprecate', DeprecateWidgetVersionController::class)->name('widget-versions.deprecate');
 });
 
 Route::get('health', HealthController::class)->name('health');

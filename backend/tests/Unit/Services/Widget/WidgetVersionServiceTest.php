@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services\Widget;
 
+use App\Enums\AuditAction;
+use App\Enums\WidgetVersionStatus;
+use App\Exceptions\DomainException;
+use App\Models\User;
 use App\Models\Widget;
 use App\Models\WidgetVersion;
 use App\Repositories\Eloquent\EloquentWidgetRepository;
 use App\Repositories\Eloquent\EloquentWidgetVersionRepository;
+use App\Services\Audit\AuditDispatcher;
 use App\Services\Widget\WidgetVersionService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,9 +29,12 @@ final class WidgetVersionServiceTest extends TestCase
     {
         parent::setUp();
 
+        config(['audit.enabled' => true, 'audit.async' => false]);
+
         $this->service = new WidgetVersionService(
             new EloquentWidgetRepository,
             new EloquentWidgetVersionRepository,
+            app(AuditDispatcher::class),
         );
     }
 
@@ -68,6 +76,94 @@ final class WidgetVersionServiceTest extends TestCase
 
         $this->assertSame('1.2.0', $dto->version);
         $this->assertSame($widget->uuid, $dto->widget_uuid);
+    }
+
+    #[Test]
+    public function it_publishes_draft_widget_version(): void
+    {
+        $user = User::factory()->create();
+        $widget = Widget::factory()->create();
+        $version = WidgetVersion::factory()->for($widget)->draft()->create([
+            'version' => '1.0.0',
+            'asset_manifest_url' => 'https://cdn.example.com/manifest.json',
+        ]);
+
+        $dto = $this->service->publish($version->uuid, $user);
+
+        $this->assertSame(WidgetVersionStatus::Published, $dto->status);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Published->value,
+            'subject_uuid' => $version->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_deprecates_previous_published_version_when_publishing_new_one(): void
+    {
+        $user = User::factory()->create();
+        $widget = Widget::factory()->create();
+        $existing = WidgetVersion::factory()->for($widget)->release('1.0.0')->create();
+        $next = WidgetVersion::factory()->for($widget)->draft()->create([
+            'version' => '1.1.0',
+            'asset_manifest_url' => 'https://cdn.example.com/manifest-1.1.0.json',
+        ]);
+
+        $this->service->publish($next->uuid, $user);
+
+        $this->assertDatabaseHas('widget_versions', [
+            'uuid' => $existing->uuid,
+            'status' => WidgetVersionStatus::Deprecated->value,
+        ]);
+        $this->assertDatabaseHas('widget_versions', [
+            'uuid' => $next->uuid,
+            'status' => WidgetVersionStatus::Published->value,
+        ]);
+    }
+
+    #[Test]
+    public function it_deprecates_published_widget_version(): void
+    {
+        $user = User::factory()->create();
+        $widget = Widget::factory()->create();
+        $version = WidgetVersion::factory()->for($widget)->release('1.0.0')->create();
+
+        $dto = $this->service->deprecate($version->uuid, $user);
+
+        $this->assertSame(WidgetVersionStatus::Deprecated, $dto->status);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => AuditAction::Deprecated->value,
+            'subject_uuid' => $version->uuid,
+        ]);
+    }
+
+    #[Test]
+    public function it_rejects_publish_without_asset_manifest_url(): void
+    {
+        $widget = Widget::factory()->create();
+        $version = WidgetVersion::factory()->for($widget)->draft()->create([
+            'version' => '1.0.0',
+            'asset_manifest_url' => null,
+        ]);
+        $user = User::factory()->create();
+
+        $this->expectException(DomainException::class);
+
+        $this->service->publish($version->uuid, $user);
+    }
+
+    #[Test]
+    public function it_rejects_deprecate_for_draft_widget_version(): void
+    {
+        $widget = Widget::factory()->create();
+        $version = WidgetVersion::factory()->for($widget)->draft()->create([
+            'version' => '1.0.0',
+            'asset_manifest_url' => 'https://cdn.example.com/manifest.json',
+        ]);
+        $user = User::factory()->create();
+
+        $this->expectException(DomainException::class);
+
+        $this->service->deprecate($version->uuid, $user);
     }
 
     #[Test]

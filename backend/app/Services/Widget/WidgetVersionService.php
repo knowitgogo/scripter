@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace App\Services\Widget;
 
 use App\DTOs\Widget\WidgetVersionDTO;
+use App\Enums\AuditAction;
+use App\Enums\WidgetVersionStatus;
+use App\Events\Audit\GenericAuditEvent;
+use App\Exceptions\DomainException;
+use App\Models\User;
 use App\Models\WidgetVersion;
 use App\Repositories\Contracts\WidgetRepositoryInterface;
 use App\Repositories\Contracts\WidgetVersionRepositoryInterface;
+use App\Services\Audit\AuditDispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
@@ -18,6 +24,7 @@ final class WidgetVersionService
     public function __construct(
         private readonly WidgetRepositoryInterface $widgets,
         private readonly WidgetVersionRepositoryInterface $widgetVersions,
+        private readonly AuditDispatcher $auditDispatcher,
     ) {}
 
     /**
@@ -54,6 +61,90 @@ final class WidgetVersionService
         /** @var WidgetVersion $widgetVersion */
         $widgetVersion = $this->widgetVersions->findByUuidOrFail($uuid);
         $widgetVersion->load('widget');
+
+        return WidgetVersionDTO::fromModel($widgetVersion);
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DomainException
+     */
+    public function publish(string $versionUuid, User $user): WidgetVersionDTO
+    {
+        /** @var WidgetVersion $widgetVersion */
+        $widgetVersion = $this->widgetVersions->findByUuidOrFail($versionUuid);
+        $widgetVersion->load('widget');
+
+        if ($widgetVersion->status === WidgetVersionStatus::Published) {
+            throw new DomainException('The widget version is already published.', 422);
+        }
+
+        if ($widgetVersion->status === WidgetVersionStatus::Deprecated) {
+            throw new DomainException('Deprecated widget versions cannot be published.', 422);
+        }
+
+        if ($widgetVersion->asset_manifest_url === null || trim($widgetVersion->asset_manifest_url) === '') {
+            throw new DomainException('The widget version cannot be published without an asset manifest URL.', 422);
+        }
+
+        foreach ($this->widgetVersions->listPublishedForWidget($widgetVersion->widget_id) as $published) {
+            if ($published->id !== $widgetVersion->id) {
+                $this->widgetVersions->update($published, ['status' => WidgetVersionStatus::Deprecated]);
+            }
+        }
+
+        $this->widgetVersions->update($widgetVersion, ['status' => WidgetVersionStatus::Published]);
+        $widgetVersion->refresh();
+
+        $this->auditDispatcher->dispatch(
+            GenericAuditEvent::record(
+                action: AuditAction::Published,
+                subjectType: 'widget_version',
+                subjectUuid: $widgetVersion->uuid,
+                actorUuid: $user->uuid,
+                metadata: [
+                    'widget_uuid' => $widgetVersion->widget->uuid,
+                    'version' => $widgetVersion->version,
+                ],
+            ),
+        );
+
+        return WidgetVersionDTO::fromModel($widgetVersion);
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DomainException
+     */
+    public function deprecate(string $versionUuid, User $user): WidgetVersionDTO
+    {
+        /** @var WidgetVersion $widgetVersion */
+        $widgetVersion = $this->widgetVersions->findByUuidOrFail($versionUuid);
+        $widgetVersion->load('widget');
+
+        if ($widgetVersion->status === WidgetVersionStatus::Deprecated) {
+            throw new DomainException('The widget version is already deprecated.', 422);
+        }
+
+        if ($widgetVersion->status === WidgetVersionStatus::Draft) {
+            throw new DomainException('Draft widget versions cannot be deprecated.', 422);
+        }
+
+        $this->widgetVersions->update($widgetVersion, ['status' => WidgetVersionStatus::Deprecated]);
+        $widgetVersion->refresh();
+
+        $this->auditDispatcher->dispatch(
+            GenericAuditEvent::record(
+                action: AuditAction::Deprecated,
+                subjectType: 'widget_version',
+                subjectUuid: $widgetVersion->uuid,
+                actorUuid: $user->uuid,
+                metadata: [
+                    'widget_uuid' => $widgetVersion->widget->uuid,
+                    'version' => $widgetVersion->version,
+                ],
+            ),
+        );
 
         return WidgetVersionDTO::fromModel($widgetVersion);
     }

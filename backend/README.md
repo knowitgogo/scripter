@@ -675,16 +675,28 @@ Bind `WidgetVersionRepositoryInterface` in `RepositoryServiceProvider`. `WidgetV
 WidgetVersionService::listForWidget(widgetUuid) → list<WidgetVersionDTO>
 WidgetVersionService::listPublishedForWidget(widgetUuid) → list<WidgetVersionDTO>
 WidgetVersionService::getByUuid(uuid) → WidgetVersionDTO
+WidgetVersionService::publish(versionUuid, User) → WidgetVersionDTO
+WidgetVersionService::deprecate(versionUuid, User) → WidgetVersionDTO
 ```
+
+**Admin version publishing:**
+
+```
+POST /api/v1/widget-versions/{uuid}/publish   → published (requires asset_manifest_url; deprecates prior published version)
+POST /api/v1/widget-versions/{uuid}/deprecate → deprecated (published only)
+```
+
+Both require `admin.widgets.publish` and emit audit events (`published`, `deprecated`) with `subject_type: widget_version`.
 
 | Layer | Path |
 |-------|------|
 | Service | `tests/Unit/Services/Widget/WidgetVersionServiceTest.php` |
 | DTO | `tests/Unit/DTOs/Widget/WidgetVersionDTOTest.php` |
+| HTTP | `tests/Feature/Widget/WidgetVersionPublishingFlowTest.php`, `tests/Feature/Api/V1/Widget/WidgetVersionAuthorizationEndpointTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetVersionRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WidgetVersionModelTest.php`, `tests/Unit/Database/WidgetVersionsMigrationTest.php` |
 
-OpenAPI schema: `openapi/openapi.yaml` (`WidgetVersion`, `WidgetVersionStatus`).
+OpenAPI schema and paths: `openapi/openapi.yaml` (`WidgetVersion`, `WidgetVersionStatus`, `POST /widget-versions/{widget_version}/publish`, `POST /widget-versions/{widget_version}/deprecate`).
 
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 
