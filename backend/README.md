@@ -635,6 +635,41 @@ WidgetCatalogService::getBySlug(slug) → WidgetDTO
 
 OpenAPI schema: `openapi/openapi.yaml` (`Widget`, `WidgetStatus`; HTTP catalog endpoints planned separately).
 
+### Widget versions
+
+Semver releases belong to a parent widget and expose asset manifest metadata.
+
+| Component | Location |
+|-----------|----------|
+| Migration | `database/migrations/2026_06_09_180001_create_widget_versions_table.php` |
+| Model | `app/Models/WidgetVersion.php` extends `PublicEntity` |
+| Status enum | `app/Enums/WidgetVersionStatus.php` (`draft`, `published`, `deprecated`) |
+| Factory | `database/factories/WidgetVersionFactory.php` |
+| Repository | `WidgetVersionRepositoryInterface` → `EloquentWidgetVersionRepository` |
+| DTO | `app/DTOs/Widget/WidgetVersionDTO.php` |
+| Service | `app/Services/Widget/WidgetVersionService.php` |
+
+**Table:** `widget_versions` — `uuid`, `widget_id` (FK → `widgets`), `version` (unique per widget), `status`, `asset_manifest_url`, timestamps.
+
+**Repository methods:** `findByWidgetAndVersion`, `findPublishedForWidget`, `listForWidget`, `listPublishedForWidget`, `listByStatus`, plus UUID lookups from `UuidRepositoryInterface`.
+
+Bind `WidgetVersionRepositoryInterface` in `RepositoryServiceProvider`. `WidgetVersionService` maps `WidgetVersion` models to `WidgetVersionDTO`.
+
+```
+WidgetVersionService::listForWidget(widgetUuid) → list<WidgetVersionDTO>
+WidgetVersionService::listPublishedForWidget(widgetUuid) → list<WidgetVersionDTO>
+WidgetVersionService::getByUuid(uuid) → WidgetVersionDTO
+```
+
+| Layer | Path |
+|-------|------|
+| Service | `tests/Unit/Services/Widget/WidgetVersionServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetVersionDTOTest.php` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetVersionRepositoryTest.php` |
+| Model / migration | `tests/Feature/Models/WidgetVersionModelTest.php`, `tests/Unit/Database/WidgetVersionsMigrationTest.php` |
+
+OpenAPI schema: `openapi/openapi.yaml` (`WidgetVersion`, `WidgetVersionStatus`).
+
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 
 ## Permissions architecture

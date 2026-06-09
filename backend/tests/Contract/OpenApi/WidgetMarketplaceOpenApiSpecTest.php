@@ -34,6 +34,7 @@ final class WidgetMarketplaceOpenApiSpecTest extends TestCase
     {
         $this->assertStringContainsString('Widget:', $this->specContents);
         $this->assertStringContainsString('WidgetVersion:', $this->specContents);
+        $this->assertStringContainsString('WidgetVersionStatus:', $this->specContents);
         $this->assertStringContainsString('WebsiteWidget:', $this->specContents);
         $this->assertStringContainsString('InstallWidgetRequest:', $this->specContents);
         $this->assertStringContainsString('UpdateWebsiteWidgetRequest:', $this->specContents);

@@ -8,6 +8,7 @@ use App\Enums\WidgetStatus;
 use Database\Factories\WidgetFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Marketplace catalog widget discoverable by customers.
@@ -17,6 +18,14 @@ final class Widget extends PublicEntity
 {
     /** @use HasFactory<WidgetFactory> */
     use HasFactory;
+
+    /**
+     * @return HasMany<WidgetVersion, $this>
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(WidgetVersion::class);
+    }
 
     /**
      * @return array<string, string>
