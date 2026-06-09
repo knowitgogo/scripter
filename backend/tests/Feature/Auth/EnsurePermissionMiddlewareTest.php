@@ -23,6 +23,9 @@ final class EnsurePermissionMiddlewareTest extends TestCase
 
         Route::middleware(['auth:api', 'permission:'.Permission::AdminUsersView->value])
             ->get('api/v1/test-permission-protected', fn (): array => ['ok' => true]);
+
+        Route::middleware('permission:'.Permission::WebsitesView->value)
+            ->get('api/v1/test-permission-only', fn (): array => ['ok' => true]);
     }
 
     #[Test]
@@ -58,5 +61,17 @@ final class EnsurePermissionMiddlewareTest extends TestCase
     {
         $this->getJson('/api/v1/test-permission-protected')
             ->assertUnauthorized();
+    }
+
+    #[Test]
+    public function middleware_returns_401_when_used_without_auth_guard(): void
+    {
+        $this->getJson('/api/v1/test-permission-only')
+            ->assertUnauthorized()
+            ->assertJson([
+                'success' => false,
+                'message' => 'Unauthenticated.',
+                'errors' => [],
+            ]);
     }
 }

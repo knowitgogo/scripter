@@ -6,19 +6,20 @@ namespace App\Http\Middleware;
 
 use App\Enums\Permission;
 use App\Models\User;
-use App\Services\Auth\PermissionService;
+use App\Services\Auth\AuthorizationService;
 use Closure;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Ensures the authenticated user holds a specific permission.
+ *
+ * Register on routes as `permission:{permission_slug}` after `auth:api`.
  */
 final class EnsurePermission
 {
     public function __construct(
-        private readonly PermissionService $permissions,
+        private readonly AuthorizationService $authorization,
     ) {}
 
     /**
@@ -29,13 +30,7 @@ final class EnsurePermission
         /** @var User|null $user */
         $user = auth('api')->user();
 
-        if ($user === null) {
-            throw new AuthorizationException('Unauthenticated.');
-        }
-
-        if (! $this->permissions->userHasPermission($user, Permission::from($permission))) {
-            throw new AuthorizationException('Forbidden.');
-        }
+        $this->authorization->authorizePermission($user, Permission::from($permission));
 
         return $next($request);
     }

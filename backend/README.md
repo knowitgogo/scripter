@@ -481,9 +481,10 @@ User.role → PermissionsRepository → PermissionService (cache) → UserPermis
 | Role map | `config/permissions.php` |
 | Repository | `PermissionsRepositoryInterface` → `ConfigPermissionsRepository` |
 | Service | `app/Services/Auth/PermissionService.php` |
+| Authorization | `app/Services/Auth/AuthorizationService.php` |
 | DTO | `app/DTOs/Auth/UserPermissionsDTO.php` |
 | Policies | `app/Policies/BasePolicy.php` + `ChecksPermissions` trait |
-| Middleware | `permission:{slug}` → `EnsurePermission` |
+| Middleware | `permission:{slug}` → `EnsurePermission` → `AuthorizationService` |
 | Gates | Registered in `AuthorizationServiceProvider` |
 
 **Cache:** resolved sets use `user:permissions:{user_uuid}` (invalidated by `RoleAssignmentService`).
@@ -506,7 +507,7 @@ final class WebsitePolicy extends BasePolicy
 Route::get('admin/users', ...)->middleware(['auth:api', 'permission:admin.users.view']);
 ```
 
-**Tests:** `tests/Unit/Services/Auth/PermissionServiceTest.php`, `tests/Feature/Auth/AuthorizationGateTest.php`, `tests/Feature/Auth/EnsurePermissionMiddlewareTest.php`.
+**Tests:** `tests/Unit/Services/Auth/AuthorizationServiceTest.php`, `tests/Unit/Services/Auth/PermissionServiceTest.php`, `tests/Unit/Http/Middleware/EnsurePermissionTest.php`, `tests/Feature/Auth/AuthorizationGateTest.php`, `tests/Feature/Auth/EnsurePermissionMiddlewareTest.php`.
 
 ## Role assignment service
 

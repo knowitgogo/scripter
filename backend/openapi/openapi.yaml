@@ -11,6 +11,13 @@ servers:
 tags:
   - name: Auth
     description: Authentication endpoints
+  - name: Authorization
+    description: |
+      Permission-based route protection. Apply the `permission:{slug}` middleware
+      after `auth:api` on protected routes. Permission slugs are defined by the
+      `Permission` schema; effective grants come from the caller's role
+      (`config/permissions.php`). Returns **401** when unauthenticated and **403**
+      when the user lacks the required permission.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -450,6 +457,12 @@ components:
           type: string
           enum: [customer, admin, super_admin]
           example: admin
+    PermissionMiddleware:
+      type: string
+      description: |
+        Route middleware parameter for `permission:{slug}`. Must match a value
+        from the `Permission` enum. Example: `permission:admin.users.view`.
+      example: admin.users.view
     Permission:
       type: string
       description: Canonical permission identifier granted by role
