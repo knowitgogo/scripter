@@ -538,30 +538,33 @@ OpenAPI paths and schemas: `openapi/openapi.yaml` (`/websites`, `/websites/{webs
 Reusable labels shared across websites via a many-to-many pivot.
 
 ```
-websites ← website_tag → tags (uuid)
+websites ← website_tags → tags (uuid)
 ```
 
 | Component | Location |
 |-----------|----------|
-| Migrations | `database/migrations/2026_06_08_170000_create_tags_table.php`, `2026_06_08_170001_create_website_tag_table.php` |
-| Model | `app/Models/Tag.php` extends `PublicEntity` |
+| Migrations | `database/migrations/2026_06_08_170000_create_tags_table.php`, `2026_06_08_170001_create_website_tags_table.php` |
+| Models | `app/Models/Tag.php`, `app/Models/WebsiteTag.php` (pivot) |
 | Factory | `database/factories/TagFactory.php` |
-| Repository | `TagRepositoryInterface` → `EloquentTagRepository` |
-| DTO | `app/DTOs/Tag/TagDTO.php` |
-| Service | `app/Services/Tag/TagService.php` |
+| Repositories | `TagRepositoryInterface` → `EloquentTagRepository`; `WebsiteTagRepositoryInterface` → `EloquentWebsiteTagRepository` |
+| DTOs | `app/DTOs/Tag/TagDTO.php`, `app/DTOs/Website/WebsiteTagsDTO.php`, `SyncWebsiteTagsDTO.php` |
+| Services | `app/Services/Tag/TagService.php`, `app/Services/Website/WebsiteTagService.php` |
 
-**Tables:** `tags` — `uuid`, `name`, `slug` (unique), timestamps. `website_tag` — `website_id`, `tag_id` (unique pair), timestamps.
+**Tables:** `tags` — `uuid`, `name`, `slug` (unique), timestamps. `website_tags` — `website_id`, `tag_id` (unique pair), timestamps.
 
-**Relationships:** `Tag` `belongsToMany` `Website`; `Website` `belongsToMany` `Tag`. The same tag row can be attached to multiple websites.
+**Relationships:** `Tag` `belongsToMany` `Website`; `Website` `belongsToMany` `Tag` via `website_tags` using `WebsiteTag` pivot. The same tag row can be attached to multiple websites.
 
-**Repository methods:** `findBySlug`, `findBySlugOrFail`, `listOrderedByName`, plus UUID lookups from `UuidRepositoryInterface`.
+**Repository methods:** `TagRepositoryInterface` — `findBySlug`, `listOrderedByName`, UUID lookups. `WebsiteTagRepositoryInterface` — `attach`, `detach`, `sync`, `listTagsForWebsite`, `isAttached`.
 
-Bind `TagRepositoryInterface` in `RepositoryServiceProvider`. `TagService` maps `Tag` models to `TagDTO`.
+Bind `TagRepositoryInterface` and `WebsiteTagRepositoryInterface` in `RepositoryServiceProvider`. `TagService` and `WebsiteTagService` map models to DTOs.
 
 ```
 TagService::list() → list<TagDTO>
 TagService::getByUuid(uuid) → TagDTO
-TagService::getBySlug(slug) → TagDTO
+WebsiteTagService::listForWebsite(websiteUuid, user) → list<TagDTO>
+WebsiteTagService::attach(websiteUuid, tagUuid, user) → WebsiteTagsDTO
+WebsiteTagService::detach(websiteUuid, tagUuid, user) → WebsiteTagsDTO
+WebsiteTagService::sync(websiteUuid, SyncWebsiteTagsDTO, user) → WebsiteTagsDTO
 ```
 
 **Tests:** Run the Tags suite with `composer test:tags`.
@@ -573,8 +576,10 @@ TagService::getBySlug(slug) → TagDTO
 | DTO | `tests/Unit/DTOs/Tag/TagDTOTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentTagRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/TagModelTest.php`, `tests/Unit/Database/TagsMigrationTest.php` |
+| Website tags | `tests/Feature/Models/WebsiteTagRelationshipTest.php`, `tests/Unit/Database/WebsiteTagsMigrationTest.php` |
+| Website tag service | `tests/Unit/Services/Website/WebsiteTagServiceTest.php` |
 
-OpenAPI schema: `openapi/openapi.yaml` (`Tag` component; HTTP endpoints planned separately).
+OpenAPI schemas: `openapi/openapi.yaml` (`Tag`, `WebsiteTags`, `SyncWebsiteTagsRequest`; HTTP endpoints planned separately).
 
 ## Permissions architecture
 

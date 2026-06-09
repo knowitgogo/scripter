@@ -38,31 +38,4 @@ final class TagsMigrationTest extends TestCase
 
         $this->assertNotEmpty($slugIndexes);
     }
-
-    #[Test]
-    public function website_tag_pivot_table_exists_with_expected_columns(): void
-    {
-        $this->assertTrue(Schema::hasTable('website_tag'));
-        $this->assertTrue(Schema::hasColumns('website_tag', [
-            'id',
-            'website_id',
-            'tag_id',
-            'created_at',
-            'updated_at',
-        ]));
-    }
-
-    #[Test]
-    public function website_tag_pivot_enforces_unique_website_and_tag_pair(): void
-    {
-        $indexes = Schema::getIndexes('website_tag');
-        $pairIndexes = array_filter(
-            $indexes,
-            fn (array $index): bool => $index['unique']
-                && in_array('website_id', $index['columns'], true)
-                && in_array('tag_id', $index['columns'], true),
-        );
-
-        $this->assertNotEmpty($pairIndexes);
-    }
 }

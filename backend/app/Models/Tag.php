@@ -23,7 +23,9 @@ final class Tag extends PublicEntity
      */
     public function websites(): BelongsToMany
     {
-        return $this->belongsToMany(Website::class, 'website_tag');
+        return $this->belongsToMany(Website::class, 'website_tags')
+            ->using(WebsiteTag::class)
+            ->withTimestamps();
     }
 
     protected static function newFactory(): TagFactory

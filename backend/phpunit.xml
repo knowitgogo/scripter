@@ -33,6 +33,12 @@
             <file>tests/Unit/Enums/WebsiteStatusTest.php</file>
             <file>tests/Feature/Models/WebsiteModelTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php</file>
+            <file>tests/Unit/Database/WebsiteTagsMigrationTest.php</file>
+            <file>tests/Feature/Models/WebsiteTagRelationshipTest.php</file>
+            <file>tests/Unit/Repositories/Eloquent/EloquentWebsiteTagRepositoryTest.php</file>
+            <file>tests/Unit/Services/Website/WebsiteTagServiceTest.php</file>
+            <file>tests/Unit/DTOs/Website/WebsiteTagsDTOTest.php</file>
+            <file>tests/Contract/OpenApi/WebsiteTagOpenApiSpecTest.php</file>
         </testsuite>
         <testsuite name="Tags">
             <directory>tests/Unit/Services/Tag</directory>

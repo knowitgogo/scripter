@@ -234,13 +234,40 @@ final class FolderStructureTest extends TestCase
             $app.'/Services/Tag/TagService.php',
             dirname(__DIR__, 3).'/database/factories/TagFactory.php',
             dirname(__DIR__, 3).'/database/migrations/2026_06_08_170000_create_tags_table.php',
-            dirname(__DIR__, 3).'/database/migrations/2026_06_08_170001_create_website_tag_table.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_08_170001_create_website_tags_table.php',
             $tests.'/Unit/Database/TagsMigrationTest.php',
             $tests.'/Feature/Models/TagModelTest.php',
             $tests.'/Unit/Repositories/Eloquent/EloquentTagRepositoryTest.php',
             $tests.'/Unit/DTOs/Tag/TagDTOTest.php',
             $tests.'/Unit/Services/Tag/TagServiceTest.php',
             $tests.'/Contract/OpenApi/TagOpenApiSpecTest.php',
+        ];
+
+        foreach ($files as $file) {
+            $this->assertFileExists($file);
+        }
+    }
+
+    #[Test]
+    public function website_tag_domain_files_exist(): void
+    {
+        $app = dirname(__DIR__, 3).'/app';
+        $tests = dirname(__DIR__, 3).'/tests';
+
+        $files = [
+            $app.'/Models/WebsiteTag.php',
+            $app.'/Repositories/Contracts/WebsiteTagRepositoryInterface.php',
+            $app.'/Repositories/Eloquent/EloquentWebsiteTagRepository.php',
+            $app.'/DTOs/Website/WebsiteTagsDTO.php',
+            $app.'/DTOs/Website/SyncWebsiteTagsDTO.php',
+            $app.'/Services/Website/WebsiteTagService.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_08_170001_create_website_tags_table.php',
+            $tests.'/Unit/Database/WebsiteTagsMigrationTest.php',
+            $tests.'/Feature/Models/WebsiteTagRelationshipTest.php',
+            $tests.'/Unit/Repositories/Eloquent/EloquentWebsiteTagRepositoryTest.php',
+            $tests.'/Unit/Services/Website/WebsiteTagServiceTest.php',
+            $tests.'/Unit/DTOs/Website/WebsiteTagsDTOTest.php',
+            $tests.'/Contract/OpenApi/WebsiteTagOpenApiSpecTest.php',
         ];
 
         foreach ($files as $file) {

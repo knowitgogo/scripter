@@ -7,7 +7,7 @@ namespace Tests\Contract\OpenApi;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
-final class TagOpenApiSpecTest extends TestCase
+final class WebsiteTagOpenApiSpecTest extends TestCase
 {
     private string $specContents;
 
@@ -22,16 +22,16 @@ final class TagOpenApiSpecTest extends TestCase
     }
 
     #[Test]
-    public function openapi_spec_defines_tag_schema(): void
+    public function openapi_spec_defines_website_tags_schema(): void
     {
-        $this->assertStringContainsString('Tag:', $this->specContents);
-        $this->assertStringContainsString('Public tag response (`TagDTO`)', $this->specContents);
+        $this->assertStringContainsString('WebsiteTags:', $this->specContents);
+        $this->assertStringContainsString('SyncWebsiteTagsRequest:', $this->specContents);
     }
 
     #[Test]
-    public function openapi_spec_tags_domain_is_documented(): void
+    public function openapi_spec_documents_website_tags_pivot(): void
     {
-        $this->assertStringContainsString('- name: Tags', $this->specContents);
         $this->assertStringContainsString('website_tags', $this->specContents);
+        $this->assertStringContainsString('WebsiteTagService', $this->specContents);
     }
 }

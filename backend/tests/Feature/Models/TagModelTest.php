@@ -73,6 +73,6 @@ final class TagModelTest extends TestCase
         }
 
         $this->assertSame(1, Tag::query()->where('slug', 'ecommerce')->count());
-        $this->assertDatabaseCount('website_tag', 2);
+        $this->assertDatabaseCount('website_tags', 2);
     }
 }

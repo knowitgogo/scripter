@@ -24,9 +24,9 @@ tags:
       require `websites.manage`. All operations are scoped to the authenticated user.
   - name: Tags
     description: |
-      Reusable labels attachable to multiple websites via the `website_tag` pivot.
-      Tag domain services expose `TagDTO`; HTTP endpoints for tag management are planned
-      separately from website CRUD.
+      Reusable labels attachable to multiple websites via the `website_tags` pivot.
+      Tag domain services expose `TagDTO`; website tag associations are managed by
+      `WebsiteTagService`. HTTP endpoints are planned separately from website CRUD.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -673,6 +673,32 @@ components:
         updated_at:
           type: string
           format: date-time
+    WebsiteTags:
+      type: object
+      description: Tags attached to a website (`WebsiteTagsDTO`, `WebsiteTagService`)
+      required:
+        - website_uuid
+        - tags
+      properties:
+        website_uuid:
+          $ref: '#/components/schemas/Uuid'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    SyncWebsiteTagsRequest:
+      type: object
+      description: Payload for replacing a website's tag set (`SyncWebsiteTagsDTO`)
+      required:
+        - tag_uuids
+      properties:
+        tag_uuids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Uuid'
+          example:
+            - 660e8400-e29b-41d4-a716-446655440001
+            - 770e8400-e29b-41d4-a716-446655440002
     Tag:
       type: object
       description: Public tag response (`TagDTO`). Tags are shared across websites.

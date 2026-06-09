@@ -31,7 +31,9 @@ final class Website extends PublicEntity
      */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'website_tag');
+        return $this->belongsToMany(Tag::class, 'website_tags')
+            ->using(WebsiteTag::class)
+            ->withTimestamps();
     }
 
     /**
