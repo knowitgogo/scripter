@@ -32,6 +32,6 @@ final class WebsiteTagOpenApiSpecTest extends TestCase
     public function openapi_spec_documents_website_tags_pivot(): void
     {
         $this->assertStringContainsString('website_tags', $this->specContents);
-        $this->assertStringContainsString('WebsiteTagService', $this->specContents);
+        $this->assertStringContainsString('TagService', $this->specContents);
     }
 }

@@ -8,7 +8,7 @@ use App\DTOs\DataTransferObject;
 use App\DTOs\Tag\TagDTO;
 
 /**
- * Tags attached to a website (`WebsiteTagService` response).
+ * Tags attached to a website (`TagService` attach/detach/sync response).
  */
 final class WebsiteTagsDTO extends DataTransferObject
 {

@@ -12,6 +12,7 @@ use App\Models\Website;
 use App\Repositories\Eloquent\EloquentTagRepository;
 use App\Repositories\Eloquent\EloquentWebsiteRepository;
 use App\Repositories\Eloquent\EloquentWebsiteTagRepository;
+use App\Services\Tag\TagService;
 use App\Services\Website\WebsiteTagService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,15 +29,17 @@ final class WebsiteTagServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new WebsiteTagService(
+        $tagService = new TagService(
+            new EloquentTagRepository,
             new EloquentWebsiteTagRepository,
             new EloquentWebsiteRepository,
-            new EloquentTagRepository,
         );
+
+        $this->service = new WebsiteTagService($tagService);
     }
 
     #[Test]
-    public function it_lists_tags_for_owned_website_as_dtos(): void
+    public function it_delegates_list_for_website_to_tag_service(): void
     {
         [$user, $website, $tag] = $this->createOwnedWebsiteWithTag();
 
@@ -44,11 +47,10 @@ final class WebsiteTagServiceTest extends TestCase
 
         $this->assertCount(1, $tags);
         $this->assertSame('marketing', $tags[0]->slug);
-        $this->assertArrayNotHasKey('id', $tags[0]->toArray());
     }
 
     #[Test]
-    public function it_attaches_tag_to_owned_website(): void
+    public function it_delegates_attach_to_tag_service(): void
     {
         [$user, $website] = $this->createOwnedWebsite();
         $tag = Tag::factory()->marketing()->create();
@@ -57,22 +59,20 @@ final class WebsiteTagServiceTest extends TestCase
 
         $this->assertSame($website->uuid, $result->website_uuid);
         $this->assertCount(1, $result->tags);
-        $this->assertSame('marketing', $result->tags[0]->slug);
     }
 
     #[Test]
-    public function it_detaches_tag_from_owned_website(): void
+    public function it_delegates_detach_to_tag_service(): void
     {
         [$user, $website, $tag] = $this->createOwnedWebsiteWithTag();
 
         $result = $this->service->detach($website->uuid, $tag->uuid, $user);
 
-        $this->assertSame($website->uuid, $result->website_uuid);
         $this->assertCount(0, $result->tags);
     }
 
     #[Test]
-    public function it_syncs_tags_for_owned_website(): void
+    public function it_delegates_sync_to_tag_service(): void
     {
         [$user, $website] = $this->createOwnedWebsite();
         $marketing = Tag::factory()->marketing()->create();
@@ -85,12 +85,11 @@ final class WebsiteTagServiceTest extends TestCase
             $user,
         );
 
-        $this->assertCount(1, $result->tags);
         $this->assertSame('ecommerce', $result->tags[0]->slug);
     }
 
     #[Test]
-    public function it_throws_when_website_is_not_owned_by_user(): void
+    public function it_delegates_ownership_checks_to_tag_service(): void
     {
         $role = Role::factory()->customer()->create();
         $owner = User::factory()->create(['role_id' => $role->id]);

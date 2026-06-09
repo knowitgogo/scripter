@@ -33,5 +33,13 @@ final class TagOpenApiSpecTest extends TestCase
     {
         $this->assertStringContainsString('- name: Tags', $this->specContents);
         $this->assertStringContainsString('website_tags', $this->specContents);
+        $this->assertStringContainsString('TagService', $this->specContents);
+    }
+
+    #[Test]
+    public function openapi_spec_documents_tag_attachment_schemas(): void
+    {
+        $this->assertStringContainsString('WebsiteTags:', $this->specContents);
+        $this->assertStringContainsString('SyncWebsiteTagsRequest:', $this->specContents);
     }
 }

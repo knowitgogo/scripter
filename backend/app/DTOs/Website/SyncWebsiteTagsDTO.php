@@ -9,7 +9,7 @@ use App\DTOs\DataTransferObject;
 use App\Http\Requests\ApiRequest;
 
 /**
- * Payload for replacing a website's tag set (`WebsiteTagService::sync`).
+ * Payload for replacing a website's tag set (`TagService::sync`).
  */
 final class SyncWebsiteTagsDTO extends DataTransferObject
 {

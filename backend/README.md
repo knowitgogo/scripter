@@ -556,15 +556,16 @@ websites ← website_tags → tags (uuid)
 
 **Repository methods:** `TagRepositoryInterface` — `findBySlug`, `listOrderedByName`, UUID lookups. `WebsiteTagRepositoryInterface` — `attach`, `detach`, `sync`, `listTagsForWebsite`, `isAttached`.
 
-Bind `TagRepositoryInterface` and `WebsiteTagRepositoryInterface` in `RepositoryServiceProvider`. `TagService` and `WebsiteTagService` map models to DTOs.
+Bind `TagRepositoryInterface` and `WebsiteTagRepositoryInterface` in `RepositoryServiceProvider`. `TagService` maps models to DTOs and owns attach/detach/sync. `WebsiteTagService` delegates to `TagService` for backward compatibility.
 
 ```
 TagService::list() → list<TagDTO>
 TagService::getByUuid(uuid) → TagDTO
-WebsiteTagService::listForWebsite(websiteUuid, user) → list<TagDTO>
-WebsiteTagService::attach(websiteUuid, tagUuid, user) → WebsiteTagsDTO
-WebsiteTagService::detach(websiteUuid, tagUuid, user) → WebsiteTagsDTO
-WebsiteTagService::sync(websiteUuid, SyncWebsiteTagsDTO, user) → WebsiteTagsDTO
+TagService::getBySlug(slug) → TagDTO
+TagService::listForWebsite(websiteUuid, user) → list<TagDTO>
+TagService::attach(websiteUuid, tagUuid, user) → WebsiteTagsDTO
+TagService::detach(websiteUuid, tagUuid, user) → WebsiteTagsDTO
+TagService::sync(websiteUuid, SyncWebsiteTagsDTO, user) → WebsiteTagsDTO
 ```
 
 **Tests:** Run the Tags suite with `composer test:tags`.

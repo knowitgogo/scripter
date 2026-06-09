@@ -25,8 +25,8 @@ tags:
   - name: Tags
     description: |
       Reusable labels attachable to multiple websites via the `website_tags` pivot.
-      Tag domain services expose `TagDTO`; website tag associations are managed by
-      `WebsiteTagService`. HTTP endpoints are planned separately from website CRUD.
+      `TagService` provides catalog lookups plus attach, detach, and sync for owned
+      websites. HTTP endpoints are planned separately from website CRUD.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -675,7 +675,7 @@ components:
           format: date-time
     WebsiteTags:
       type: object
-      description: Tags attached to a website (`WebsiteTagsDTO`, `WebsiteTagService`)
+      description: Tags attached to a website (`WebsiteTagsDTO`, `TagService`)
       required:
         - website_uuid
         - tags
