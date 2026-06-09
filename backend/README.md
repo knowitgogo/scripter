@@ -483,6 +483,7 @@ users (uuid) ← websites.user_id (internal FK, hidden from API)
 | Factory | `database/factories/WebsiteFactory.php` |
 | Repository | `WebsiteRepositoryInterface` → `EloquentWebsiteRepository` |
 | DTOs | `app/DTOs/Website/WebsiteDTO.php`, `CreateWebsiteDTO.php` |
+| Service | `app/Services/Website/WebsiteService.php` |
 
 **Table:** `websites` — `uuid`, `user_id`, `name`, `url` (unique), `status`, timestamps.
 
@@ -492,7 +493,18 @@ users (uuid) ← websites.user_id (internal FK, hidden from API)
 
 Bind `WebsiteRepositoryInterface` in `RepositoryServiceProvider`. Services map `Website` models to `WebsiteDTO` before returning to controllers. `CreateWebsiteDTO` maps validated Form Request input.
 
-**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`, `tests/Unit/DTOs/Website/WebsiteDTOTest.php`, `tests/Unit/DTOs/Website/CreateWebsiteDTOTest.php`.
+```
+CreateWebsiteDTO + User
+  → WebsiteService::create()
+  → WebsiteRepository (persist + url uniqueness)
+  → AuditDispatcher (website.created)
+  → WebsiteDTO
+
+User → WebsiteService::listForUser() → list<WebsiteDTO>
+User + website uuid → WebsiteService::getForUser() → WebsiteDTO
+```
+
+**Tests:** `tests/Unit/Database/WebsitesMigrationTest.php`, `tests/Unit/Enums/WebsiteStatusTest.php`, `tests/Feature/Models/WebsiteModelTest.php`, `tests/Unit/Repositories/Eloquent/EloquentWebsiteRepositoryTest.php`, `tests/Unit/DTOs/Website/WebsiteDTOTest.php`, `tests/Unit/DTOs/Website/CreateWebsiteDTOTest.php`, `tests/Unit/Services/Website/WebsiteServiceTest.php`.
 
 HTTP endpoints (`GET/POST /websites`) are planned in subsequent tasks.
 
