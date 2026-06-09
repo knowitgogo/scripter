@@ -13,6 +13,7 @@
         </testsuite>
         <testsuite name="Contract">
             <directory>tests/Contract</directory>
+            <file>tests/Unit/Architecture/WidgetMarketplaceArchitectureDocTest.php</file>
         </testsuite>
         <testsuite name="Auth">
             <directory>tests/Feature/Auth</directory>

@@ -150,6 +150,8 @@ public function store(CreateWebsiteRequest $request, WebsiteService $service): J
 | **Auth** | `RegisterService`, `LoginService`, `TokenRefreshService` | `UserRepository` | `RegisterDTO`, `LoginDTO`, `AuthTokenDTO` |
 | **Website** | `WebsiteService`, `WebsiteTagService` | `WebsiteRepository`, `TagRepository` | `CreateWebsiteDTO`, `WebsiteDTO` |
 | **Widget** | `WidgetCatalogService`, `WebsiteWidgetService`, `WidgetKeyService` | `WidgetRepository`, `WebsiteWidgetRepository`, `WidgetKeyRepository` | `InstallWidgetDTO`, `WidgetKeyDTO` |
+
+See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the widget marketplace bounded context (catalog, installation, keys, runtime).
 | **Analytics** | `EventIngestionService`, `AggregationService`, `DashboardService` | `AnalyticsEventRepository`, `AggregationRepository` | `TrackEventDTO`, `DashboardQueryDTO` |
 | **Billing** | `UsageService`, `SubscriptionService`, `CheckoutService` | `PlanRepository`, `SubscriptionRepository`, `PaymentRepository` | `CheckoutDTO`, `UsageSummaryDTO` |
 | **Admin** | `UserManagementService`, `AuditLogService` | `UserRepository`, `AuditLogRepository` | `AdminUserDTO`, `AuditLogQueryDTO` |

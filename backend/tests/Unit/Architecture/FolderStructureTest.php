@@ -216,6 +216,9 @@ final class FolderStructureTest extends TestCase
             $tests.'/Feature/Api/V1/Website/DestroyWebsiteEndpointTest.php',
             $tests.'/Feature/Api/V1/Website/WebsiteAuthorizationEndpointTest.php',
             $tests.'/Contract/OpenApi/WebsiteOpenApiSpecTest.php',
+            dirname(__DIR__, 4).'/docs/WIDGET_MARKETPLACE_ARCHITECTURE.md',
+            $tests.'/Unit/Architecture/WidgetMarketplaceArchitectureDocTest.php',
+            $tests.'/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php',
         ];
 
         foreach ($files as $file) {

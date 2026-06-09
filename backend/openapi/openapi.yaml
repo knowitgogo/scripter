@@ -27,6 +27,12 @@ tags:
       Reusable tag catalog CRUD and website attachments via the `website_tags` pivot.
       Read routes require `tags.view`; write routes require `tags.manage`.
       `TagService` provides catalog lookups plus attach, detach, and sync for owned websites.
+  - name: Widgets
+    description: |
+      Widget marketplace catalog, website installations, and runtime credentials.
+      Catalog read routes require `widgets.view`; install and key management require
+      `widgets.install`. Admin publish uses `admin.widgets.publish`. Reference schemas
+      are defined below; HTTP paths ship incrementally per `docs/WIDGET_MARKETPLACE_ARCHITECTURE.md`.
   - name: System
     description: Infrastructure endpoints
 paths:
@@ -1032,6 +1038,199 @@ components:
             $ref: '#/components/schemas/Uuid'
           example:
             - 660e8400-e29b-41d4-a716-446655440001
+    Widget:
+      type: object
+      description: Marketplace catalog entry (`WidgetDTO`)
+      required:
+        - uuid
+        - name
+        - slug
+        - status
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+          maxLength: 255
+          example: Feedback Form
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: feedback-form
+        description:
+          type: string
+          maxLength: 2000
+          example: Collect on-page feedback with customizable themes.
+        status:
+          $ref: '#/components/schemas/WidgetStatus'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    WidgetStatus:
+      type: string
+      enum: [draft, published, deprecated]
+      example: published
+    WidgetVersion:
+      type: object
+      description: Published widget release (`WidgetVersionDTO`)
+      required:
+        - uuid
+        - widget_uuid
+        - version
+        - status
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        widget_uuid:
+          $ref: '#/components/schemas/Uuid'
+        version:
+          type: string
+          pattern: '^\d+\.\d+\.\d+$'
+          example: 1.2.0
+        status:
+          $ref: '#/components/schemas/WidgetVersionStatus'
+        asset_manifest_url:
+          type: string
+          format: uri
+          example: https://cdn.example.com/widgets/feedback-form/1.2.0/manifest.json
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    WidgetVersionStatus:
+      type: string
+      enum: [draft, published, deprecated]
+      example: published
+    WebsiteWidget:
+      type: object
+      description: Widget installation on a customer website (`WebsiteWidgetDTO`)
+      required:
+        - uuid
+        - website_uuid
+        - widget_version_uuid
+        - status
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        website_uuid:
+          $ref: '#/components/schemas/Uuid'
+        widget_version_uuid:
+          $ref: '#/components/schemas/Uuid'
+        status:
+          $ref: '#/components/schemas/WebsiteWidgetStatus'
+        configuration:
+          type: object
+          additionalProperties: true
+          example:
+            theme: dark
+            position: bottom-right
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    WebsiteWidgetStatus:
+      type: string
+      enum: [active, inactive, suspended]
+      example: active
+    InstallWidgetRequest:
+      type: object
+      description: Payload for installing a widget on a website (`InstallWidgetDTO`)
+      required:
+        - website_uuid
+        - widget_version_uuid
+      properties:
+        website_uuid:
+          $ref: '#/components/schemas/Uuid'
+        widget_version_uuid:
+          $ref: '#/components/schemas/Uuid'
+        configuration:
+          type: object
+          additionalProperties: true
+    UpdateWebsiteWidgetRequest:
+      type: object
+      description: Payload for updating a website widget installation (`UpdateWebsiteWidgetDTO`)
+      properties:
+        status:
+          $ref: '#/components/schemas/WebsiteWidgetStatus'
+        configuration:
+          type: object
+          additionalProperties: true
+    WidgetKey:
+      type: object
+      description: Runtime credential metadata (`WidgetKeyDTO`; secret shown once on create)
+      required:
+        - uuid
+        - website_widget_uuid
+        - status
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        website_widget_uuid:
+          $ref: '#/components/schemas/Uuid'
+        status:
+          $ref: '#/components/schemas/WidgetKeyStatus'
+        allowed_domains:
+          type: array
+          items:
+            type: string
+            format: hostname
+          example:
+            - www.example.com
+        key:
+          type: string
+          description: Plaintext key returned only on creation
+          example: wk_live_abc123
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    WidgetKeyStatus:
+      type: string
+      enum: [active, revoked]
+      example: active
+    CreateWidgetKeyRequest:
+      type: object
+      description: Payload for generating a widget key (`CreateWidgetKeyDTO`)
+      required:
+        - website_widget_uuid
+        - allowed_domains
+      properties:
+        website_widget_uuid:
+          $ref: '#/components/schemas/Uuid'
+        allowed_domains:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: hostname
+    WidgetInitConfig:
+      type: object
+      description: Runtime bootstrap payload (`WidgetInitConfigDTO`)
+      required:
+        - website_widget_uuid
+        - widget_version_uuid
+        - asset_manifest_url
+      properties:
+        website_widget_uuid:
+          $ref: '#/components/schemas/Uuid'
+        widget_version_uuid:
+          $ref: '#/components/schemas/Uuid'
+        asset_manifest_url:
+          type: string
+          format: uri
+        configuration:
+          type: object
+          additionalProperties: true
     CreateWebsiteRequest:
       type: object
       description: Payload for creating a website (`CreateWebsiteDTO`)

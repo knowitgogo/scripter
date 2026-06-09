@@ -1,6 +1,6 @@
 # Script Manager — Backend API
 
-Laravel 13 **API-only** application for the Widget Marketplace Platform. See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full system design.
+Laravel 13 **API-only** application for the Widget Marketplace Platform. See [ARCHITECTURE.md](../ARCHITECTURE.md) for the full system design and [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the widget marketplace bounded context.
 
 ## API-only configuration
 
