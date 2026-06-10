@@ -388,6 +388,18 @@ final class FolderStructureTest extends TestCase
             $tests.'/Unit/DTOs/Widget/SyncWidgetCategoriesDTOTest.php',
             $tests.'/Unit/Services/Widget/WidgetCategoryServiceTest.php',
             $tests.'/Unit/Repositories/Eloquent/EloquentWidgetCategoryWidgetRepositoryTest.php',
+            $app.'/Models/WidgetTemplate.php',
+            $app.'/Repositories/Contracts/WidgetTemplateRepositoryInterface.php',
+            $app.'/Repositories/Eloquent/EloquentWidgetTemplateRepository.php',
+            $app.'/DTOs/Widget/WidgetTemplateDTO.php',
+            $app.'/Services/Widget/WidgetTemplateService.php',
+            dirname(__DIR__, 3).'/database/factories/WidgetTemplateFactory.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_09_180004_create_widget_templates_table.php',
+            $tests.'/Unit/Database/WidgetTemplatesMigrationTest.php',
+            $tests.'/Feature/Models/WidgetTemplateModelTest.php',
+            $tests.'/Unit/Repositories/Eloquent/EloquentWidgetTemplateRepositoryTest.php',
+            $tests.'/Unit/DTOs/Widget/WidgetTemplateDTOTest.php',
+            $tests.'/Unit/Services/Widget/WidgetTemplateServiceTest.php',
         ];
 
         foreach ($files as $file) {

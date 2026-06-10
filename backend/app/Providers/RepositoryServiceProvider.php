@@ -20,6 +20,7 @@ use App\Repositories\Contracts\WebsiteTagRepositoryInterface;
 use App\Repositories\Contracts\WidgetCategoryRepositoryInterface;
 use App\Repositories\Contracts\WidgetCategoryWidgetRepositoryInterface;
 use App\Repositories\Contracts\WidgetRepositoryInterface;
+use App\Repositories\Contracts\WidgetTemplateRepositoryInterface;
 use App\Repositories\Contracts\WidgetVersionRepositoryInterface;
 use App\Repositories\Eloquent\EloquentRoleRepository;
 use App\Repositories\Eloquent\EloquentTagRepository;
@@ -29,6 +30,7 @@ use App\Repositories\Eloquent\EloquentWebsiteTagRepository;
 use App\Repositories\Eloquent\EloquentWidgetCategoryRepository;
 use App\Repositories\Eloquent\EloquentWidgetCategoryWidgetRepository;
 use App\Repositories\Eloquent\EloquentWidgetRepository;
+use App\Repositories\Eloquent\EloquentWidgetTemplateRepository;
 use App\Repositories\Eloquent\EloquentWidgetVersionRepository;
 use App\Repositories\Infrastructure\InfrastructureProbeRepository;
 use App\Repositories\OpenApi\FileOpenApiSpecRepository;
@@ -58,6 +60,7 @@ class RepositoryServiceProvider extends ServiceProvider
         WidgetCategoryRepositoryInterface::class => EloquentWidgetCategoryRepository::class,
         WidgetCategoryWidgetRepositoryInterface::class => EloquentWidgetCategoryWidgetRepository::class,
         WidgetRepositoryInterface::class => EloquentWidgetRepository::class,
+        WidgetTemplateRepositoryInterface::class => EloquentWidgetTemplateRepository::class,
         WidgetVersionRepositoryInterface::class => EloquentWidgetVersionRepository::class,
         PermissionsRepositoryInterface::class => ConfigPermissionsRepository::class,
     ];

@@ -1571,6 +1571,47 @@ components:
           example:
             - 660e8400-e29b-41d4-a716-446655440001
             - 770e8400-e29b-41d4-a716-446655440002
+    WidgetTemplate:
+      type: object
+      description: Embed or hosted install snippet template (`WidgetTemplateDTO`)
+      required:
+        - uuid
+        - widget_uuid
+        - name
+        - slug
+        - content
+        - is_default
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        widget_uuid:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+          maxLength: 100
+          example: Embedded Script
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: embedded
+        description:
+          type: string
+          maxLength: 2000
+          example: Standard script-tag embed snippet.
+        content:
+          type: string
+          description: Snippet template with placeholders such as `{{widget_uuid}}` and `{{widget_key}}`
+          example: '<script src="{{cdn_url}}/widgets/{{widget_uuid}}.js" data-key="{{widget_key}}" async></script>'
+        is_default:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     WidgetCategory:
       type: object
       description: Marketplace taxonomy category (`WidgetCategoryDTO`)

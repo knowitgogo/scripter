@@ -35,6 +35,7 @@ return [
         'tags',
         'widgets',
         'widget_categories',
+        'widget_templates',
         'widget_versions',
         'website_widgets',
         'plans',

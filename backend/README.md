@@ -230,7 +230,7 @@ Public entities are identified by UUID in routes, DTOs, and API responses. Inter
 | Repository | `FindsByUuid` concern | Lookup by public identifier |
 | Validation | `App\Rules\ValidUuid` | Form Request validation |
 
-**Public entities:** users, websites, widgets, widget_versions, website_widgets, plans, subscriptions, payments, audit_logs.
+**Public entities:** users, websites, widgets, widget_categories, widget_templates, widget_versions, website_widgets, plans, subscriptions, payments, audit_logs.
 
 **Excluded:** widget_keys (credential-based), analytics_events (high volume).
 
@@ -742,6 +742,35 @@ Bind `WidgetCategoryWidgetRepositoryInterface` in `RepositoryServiceProvider`.
 | Model / migration | `tests/Feature/Models/WidgetCategoryModelTest.php`, `tests/Unit/Database/WidgetCategoriesMigrationTest.php`, `tests/Unit/Database/WidgetCategoryWidgetMigrationTest.php` |
 
 OpenAPI schemas: `openapi/openapi.yaml` (`WidgetCategory`, `WidgetCategories`, `SyncWidgetCategoriesRequest`).
+
+### Widget templates
+
+| Layer | Path |
+|-------|------|
+| Migration | `database/migrations/2026_06_09_180004_create_widget_templates_table.php` |
+| Model | `app/Models/WidgetTemplate.php` extends `PublicEntity` |
+| Factory | `database/factories/WidgetTemplateFactory.php` |
+| Repository | `WidgetTemplateRepositoryInterface` → `EloquentWidgetTemplateRepository` |
+| DTO | `app/DTOs/Widget/WidgetTemplateDTO.php` |
+| Service | `app/Services/Widget/WidgetTemplateService.php` |
+
+```
+WidgetTemplateService::listForWidget(widgetUuid) → list<WidgetTemplateDTO>
+WidgetTemplateService::getByUuid(uuid) → WidgetTemplateDTO
+WidgetTemplateService::getByWidgetAndSlug(widgetUuid, slug) → WidgetTemplateDTO
+WidgetTemplateService::getDefaultForWidget(widgetUuid) → WidgetTemplateDTO
+```
+
+Bind `WidgetTemplateRepositoryInterface` in `RepositoryServiceProvider`.
+
+| Layer | Path |
+|-------|------|
+| Service | `tests/Unit/Services/Widget/WidgetTemplateServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetTemplateDTOTest.php` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetTemplateRepositoryTest.php` |
+| Model / migration | `tests/Feature/Models/WidgetTemplateModelTest.php`, `tests/Unit/Database/WidgetTemplatesMigrationTest.php` |
+
+OpenAPI schema: `openapi/openapi.yaml` (`WidgetTemplate`).
 
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 

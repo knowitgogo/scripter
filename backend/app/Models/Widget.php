@@ -39,6 +39,14 @@ final class Widget extends PublicEntity
     }
 
     /**
+     * @return HasMany<WidgetTemplate, $this>
+     */
+    public function templates(): HasMany
+    {
+        return $this->hasMany(WidgetTemplate::class);
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
