@@ -7,6 +7,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\WidgetTemplate;
 use App\Repositories\Contracts\WidgetTemplateRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Eloquent persistence for widget template aggregates.
@@ -25,6 +26,29 @@ final class EloquentWidgetTemplateRepository extends UuidEloquentRepository impl
         return $template;
     }
 
+    public function findByUuidForWidget(int $widgetId, string $uuid): ?WidgetTemplate
+    {
+        /** @var WidgetTemplate|null $template */
+        $template = $this->newModelQuery()
+            ->with('widget')
+            ->where('widget_id', $widgetId)
+            ->where('uuid', $uuid)
+            ->first();
+
+        return $template;
+    }
+
+    public function findByUuidForWidgetOrFail(int $widgetId, string $uuid): WidgetTemplate
+    {
+        $template = $this->findByUuidForWidget($widgetId, $uuid);
+
+        if ($template === null) {
+            throw (new ModelNotFoundException)->setModel($this->model());
+        }
+
+        return $template;
+    }
+
     public function findDefaultForWidget(int $widgetId): ?WidgetTemplate
     {
         /** @var WidgetTemplate|null $template */
@@ -35,6 +59,27 @@ final class EloquentWidgetTemplateRepository extends UuidEloquentRepository impl
             ->first();
 
         return $template;
+    }
+
+    public function slugExistsForWidget(int $widgetId, string $slug, ?string $excludeTemplateUuid = null): bool
+    {
+        $query = $this->newModelQuery()
+            ->where('widget_id', $widgetId)
+            ->where('slug', $slug);
+
+        if ($excludeTemplateUuid !== null) {
+            $query->where('uuid', '!=', $excludeTemplateUuid);
+        }
+
+        return $query->exists();
+    }
+
+    public function clearDefaultForWidget(int $widgetId): void
+    {
+        $this->newModelQuery()
+            ->where('widget_id', $widgetId)
+            ->where('is_default', true)
+            ->update(['is_default' => false]);
     }
 
     /**

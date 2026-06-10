@@ -14,7 +14,15 @@ interface WidgetTemplateRepositoryInterface extends UuidRepositoryInterface
 {
     public function findByWidgetAndSlug(int $widgetId, string $slug): ?WidgetTemplate;
 
+    public function findByUuidForWidget(int $widgetId, string $uuid): ?WidgetTemplate;
+
+    public function findByUuidForWidgetOrFail(int $widgetId, string $uuid): WidgetTemplate;
+
     public function findDefaultForWidget(int $widgetId): ?WidgetTemplate;
+
+    public function slugExistsForWidget(int $widgetId, string $slug, ?string $excludeTemplateUuid = null): bool;
+
+    public function clearDefaultForWidget(int $widgetId): void;
 
     /**
      * @return Collection<int, WidgetTemplate>

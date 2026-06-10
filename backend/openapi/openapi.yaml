@@ -1571,6 +1571,48 @@ components:
           example:
             - 660e8400-e29b-41d4-a716-446655440001
             - 770e8400-e29b-41d4-a716-446655440002
+    WidgetTemplates:
+      type: object
+      description: Templates assigned to a widget (`WidgetTemplatesDTO`, `WidgetTemplateAssignmentService`)
+      required:
+        - widget_uuid
+        - templates
+      properties:
+        widget_uuid:
+          $ref: '#/components/schemas/Uuid'
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetTemplate'
+    AssignWidgetTemplateRequest:
+      type: object
+      description: Payload for assigning a template to a widget (`AssignWidgetTemplateDTO`)
+      required:
+        - name
+        - slug
+        - content
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Embedded Script
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: embedded
+        description:
+          type: string
+          maxLength: 2000
+          example: Standard script-tag embed snippet.
+        content:
+          type: string
+          description: Snippet template with placeholders such as `{{widget_uuid}}` and `{{widget_key}}`
+          example: '<script src="{{cdn_url}}/widgets/{{widget_uuid}}.js" data-key="{{widget_key}}" async></script>'
+        is_default:
+          type: boolean
+          default: false
+          example: true
     WidgetTemplate:
       type: object
       description: Embed or hosted install snippet template (`WidgetTemplateDTO`)

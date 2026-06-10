@@ -69,4 +69,42 @@ final class EloquentWidgetTemplateRepositoryTest extends TestCase
 
         $this->assertTrue($default->is($this->repository->findDefaultForWidget($widget->id)));
     }
+
+    #[Test]
+    public function it_finds_template_by_uuid_for_widget(): void
+    {
+        $widget = Widget::factory()->create();
+        $otherWidget = Widget::factory()->create();
+        $template = WidgetTemplate::factory()->for($widget)->embedded()->create();
+        WidgetTemplate::factory()->for($otherWidget)->hosted()->create();
+
+        $this->assertTrue($template->is($this->repository->findByUuidForWidget($widget->id, $template->uuid)));
+        $this->assertNull($this->repository->findByUuidForWidget($otherWidget->id, $template->uuid));
+    }
+
+    #[Test]
+    public function it_detects_slug_conflicts_per_widget(): void
+    {
+        $widget = Widget::factory()->create();
+        $template = WidgetTemplate::factory()->for($widget)->embedded()->create();
+
+        $this->assertTrue($this->repository->slugExistsForWidget($widget->id, 'embedded'));
+        $this->assertFalse($this->repository->slugExistsForWidget($widget->id, 'embedded', $template->uuid));
+        $this->assertFalse($this->repository->slugExistsForWidget($widget->id, 'hosted'));
+    }
+
+    #[Test]
+    public function it_clears_default_flag_for_widget_templates(): void
+    {
+        $widget = Widget::factory()->create();
+        WidgetTemplate::factory()->for($widget)->embedded()->defaultTemplate()->create();
+        WidgetTemplate::factory()->for($widget)->hosted()->defaultTemplate()->create();
+
+        $this->repository->clearDefaultForWidget($widget->id);
+
+        $this->assertDatabaseMissing('widget_templates', [
+            'widget_id' => $widget->id,
+            'is_default' => true,
+        ]);
+    }
 }

@@ -772,6 +772,26 @@ Bind `WidgetTemplateRepositoryInterface` in `RepositoryServiceProvider`.
 
 OpenAPI schema: `openapi/openapi.yaml` (`WidgetTemplate`).
 
+### Widget template assignment
+
+| Layer | Path |
+|-------|------|
+| DTO | `app/DTOs/Widget/WidgetTemplatesDTO.php`, `AssignWidgetTemplateDTO.php` |
+| Service | `app/Services/Widget/WidgetTemplateAssignmentService.php` |
+
+```
+WidgetTemplateAssignmentService::assign(widgetUuid, AssignWidgetTemplateDTO, user) → WidgetTemplatesDTO
+WidgetTemplateAssignmentService::assignDefault(widgetUuid, templateUuid, user) → WidgetTemplateDTO
+WidgetTemplateAssignmentService::unassign(widgetUuid, templateUuid, user) → WidgetTemplatesDTO
+```
+
+| Layer | Path |
+|-------|------|
+| Service | `tests/Unit/Services/Widget/WidgetTemplateAssignmentServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetTemplatesDTOTest.php`, `AssignWidgetTemplateDTOTest.php` |
+
+OpenAPI schemas: `openapi/openapi.yaml` (`WidgetTemplates`, `AssignWidgetTemplateRequest`).
+
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 
 ## Permissions architecture
