@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Customer-owned website where widgets are installed.
@@ -34,6 +35,14 @@ final class Website extends PublicEntity
         return $this->belongsToMany(Tag::class, 'website_tags')
             ->using(WebsiteTag::class)
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<WebsiteWidget, $this>
+     */
+    public function websiteWidgets(): HasMany
+    {
+        return $this->hasMany(WebsiteWidget::class);
     }
 
     /**

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Semver release of a marketplace widget with asset manifest metadata.
@@ -27,6 +28,14 @@ final class WidgetVersion extends PublicEntity
     public function widget(): BelongsTo
     {
         return $this->belongsTo(Widget::class);
+    }
+
+    /**
+     * @return HasMany<WebsiteWidget, $this>
+     */
+    public function websiteWidgets(): HasMany
+    {
+        return $this->hasMany(WebsiteWidget::class);
     }
 
     /**

@@ -406,6 +406,20 @@ final class FolderStructureTest extends TestCase
             $tests.'/Unit/DTOs/Widget/WidgetTemplatesDTOTest.php',
             $tests.'/Unit/DTOs/Widget/AssignWidgetTemplateDTOTest.php',
             $tests.'/Unit/Services/Widget/WidgetTemplateAssignmentServiceTest.php',
+            $app.'/Enums/WebsiteWidgetStatus.php',
+            $app.'/Models/WebsiteWidget.php',
+            $app.'/Repositories/Contracts/WebsiteWidgetRepositoryInterface.php',
+            $app.'/Repositories/Eloquent/EloquentWebsiteWidgetRepository.php',
+            $app.'/DTOs/Widget/WebsiteWidgetDTO.php',
+            $app.'/Services/Widget/WebsiteWidgetService.php',
+            dirname(__DIR__, 3).'/database/factories/WebsiteWidgetFactory.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_09_180005_create_website_widgets_table.php',
+            $tests.'/Unit/Database/WebsiteWidgetsMigrationTest.php',
+            $tests.'/Unit/Enums/WebsiteWidgetStatusTest.php',
+            $tests.'/Feature/Models/WebsiteWidgetModelTest.php',
+            $tests.'/Unit/Repositories/Eloquent/EloquentWebsiteWidgetRepositoryTest.php',
+            $tests.'/Unit/DTOs/Widget/WebsiteWidgetDTOTest.php',
+            $tests.'/Unit/Services/Widget/WebsiteWidgetServiceTest.php',
         ];
 
         foreach ($files as $file) {

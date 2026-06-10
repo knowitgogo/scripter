@@ -792,6 +792,35 @@ WidgetTemplateAssignmentService::unassign(widgetUuid, templateUuid, user) → Wi
 
 OpenAPI schemas: `openapi/openapi.yaml` (`WidgetTemplates`, `AssignWidgetTemplateRequest`).
 
+### Website widgets
+
+| Layer | Path |
+|-------|------|
+| Migration | `database/migrations/2026_06_09_180005_create_website_widgets_table.php` |
+| Enum | `app/Enums/WebsiteWidgetStatus.php` |
+| Model | `app/Models/WebsiteWidget.php` extends `PublicEntity` |
+| Factory | `database/factories/WebsiteWidgetFactory.php` |
+| Repository | `WebsiteWidgetRepositoryInterface` → `EloquentWebsiteWidgetRepository` |
+| DTO | `app/DTOs/Widget/WebsiteWidgetDTO.php` |
+| Service | `app/Services/Widget/WebsiteWidgetService.php` |
+
+```
+WebsiteWidgetService::listForWebsite(websiteUuid) → list<WebsiteWidgetDTO>
+WebsiteWidgetService::getByUuid(uuid) → WebsiteWidgetDTO
+WebsiteWidgetService::getByUuidForWebsite(websiteUuid, uuid) → WebsiteWidgetDTO
+```
+
+Bind `WebsiteWidgetRepositoryInterface` in `RepositoryServiceProvider`.
+
+| Layer | Path |
+|-------|------|
+| Service | `tests/Unit/Services/Widget/WebsiteWidgetServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WebsiteWidgetDTOTest.php` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentWebsiteWidgetRepositoryTest.php` |
+| Model / migration | `tests/Feature/Models/WebsiteWidgetModelTest.php`, `tests/Unit/Database/WebsiteWidgetsMigrationTest.php` |
+
+OpenAPI schemas: `openapi/openapi.yaml` (`WebsiteWidget`, `WebsiteWidgetStatus`).
+
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 
 ## Permissions architecture

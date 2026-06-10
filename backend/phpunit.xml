@@ -63,17 +63,21 @@
             <file>tests/Unit/Database/WidgetCategoriesMigrationTest.php</file>
             <file>tests/Unit/Database/WidgetCategoryWidgetMigrationTest.php</file>
             <file>tests/Unit/Database/WidgetTemplatesMigrationTest.php</file>
+            <file>tests/Unit/Database/WebsiteWidgetsMigrationTest.php</file>
             <file>tests/Unit/Enums/WidgetStatusTest.php</file>
             <file>tests/Unit/Enums/WidgetVersionStatusTest.php</file>
+            <file>tests/Unit/Enums/WebsiteWidgetStatusTest.php</file>
             <file>tests/Feature/Models/WidgetModelTest.php</file>
             <file>tests/Feature/Models/WidgetVersionModelTest.php</file>
             <file>tests/Feature/Models/WidgetCategoryModelTest.php</file>
             <file>tests/Feature/Models/WidgetTemplateModelTest.php</file>
+            <file>tests/Feature/Models/WebsiteWidgetModelTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetVersionRepositoryTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetCategoryRepositoryTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetCategoryWidgetRepositoryTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetTemplateRepositoryTest.php</file>
+            <file>tests/Unit/Repositories/Eloquent/EloquentWebsiteWidgetRepositoryTest.php</file>
             <file>tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php</file>
         </testsuite>
     </testsuites>
