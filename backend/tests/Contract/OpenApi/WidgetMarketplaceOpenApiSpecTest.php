@@ -66,6 +66,19 @@ final class WidgetMarketplaceOpenApiSpecTest extends TestCase
     }
 
     #[Test]
+    public function openapi_spec_documents_website_widget_paths(): void
+    {
+        $this->assertStringContainsString('/websites/{website}/widgets:', $this->specContents);
+        $this->assertStringContainsString('/website-widgets:', $this->specContents);
+        $this->assertStringContainsString('/website-widgets/{website_widget}:', $this->specContents);
+        $this->assertStringContainsString('operationId: listWebsiteWidgets', $this->specContents);
+        $this->assertStringContainsString('operationId: installWidget', $this->specContents);
+        $this->assertStringContainsString('operationId: showWebsiteWidget', $this->specContents);
+        $this->assertStringContainsString('operationId: updateWebsiteWidget', $this->specContents);
+        $this->assertStringContainsString('operationId: uninstallWebsiteWidget', $this->specContents);
+    }
+
+    #[Test]
     public function openapi_spec_documents_widget_version_rollback_path(): void
     {
         $this->assertStringContainsString('/widget-versions/{widget_version}/rollback:', $this->specContents);

@@ -814,9 +814,14 @@ WebsiteWidgetRepositoryInterface::create / update / delete (inherited CRUD)
 ```
 
 ```
+WebsiteWidgetService::listForUser(user) → list<WebsiteWidgetDTO>
 WebsiteWidgetService::listForWebsite(websiteUuid) → list<WebsiteWidgetDTO>
+WebsiteWidgetService::getForUser(websiteWidgetUuid, user) → WebsiteWidgetDTO
 WebsiteWidgetService::getByUuid(uuid) → WebsiteWidgetDTO
 WebsiteWidgetService::getByUuidForWebsite(websiteUuid, uuid) → WebsiteWidgetDTO
+WebsiteWidgetService::install(InstallWidgetDTO, user) → WebsiteWidgetDTO
+WebsiteWidgetService::update(websiteWidgetUuid, UpdateWebsiteWidgetDTO, user) → WebsiteWidgetDTO
+WebsiteWidgetService::uninstall(websiteWidgetUuid, user) → void
 ```
 
 Bind `WebsiteWidgetRepositoryInterface` in `RepositoryServiceProvider`.
