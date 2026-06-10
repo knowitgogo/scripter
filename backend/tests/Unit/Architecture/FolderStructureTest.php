@@ -411,6 +411,8 @@ final class FolderStructureTest extends TestCase
             $app.'/Repositories/Contracts/WebsiteWidgetRepositoryInterface.php',
             $app.'/Repositories/Eloquent/EloquentWebsiteWidgetRepository.php',
             $app.'/DTOs/Widget/WebsiteWidgetDTO.php',
+            $app.'/DTOs/Widget/InstallWidgetDTO.php',
+            $app.'/DTOs/Widget/UpdateWebsiteWidgetDTO.php',
             $app.'/Services/Widget/WebsiteWidgetService.php',
             dirname(__DIR__, 3).'/database/factories/WebsiteWidgetFactory.php',
             dirname(__DIR__, 3).'/database/migrations/2026_06_09_180005_create_website_widgets_table.php',
@@ -419,6 +421,8 @@ final class FolderStructureTest extends TestCase
             $tests.'/Feature/Models/WebsiteWidgetModelTest.php',
             $tests.'/Unit/Repositories/Eloquent/EloquentWebsiteWidgetRepositoryTest.php',
             $tests.'/Unit/DTOs/Widget/WebsiteWidgetDTOTest.php',
+            $tests.'/Unit/DTOs/Widget/InstallWidgetDTOTest.php',
+            $tests.'/Unit/DTOs/Widget/UpdateWebsiteWidgetDTOTest.php',
             $tests.'/Unit/Services/Widget/WebsiteWidgetServiceTest.php',
         ];
 

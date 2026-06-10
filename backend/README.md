@@ -801,7 +801,7 @@ OpenAPI schemas: `openapi/openapi.yaml` (`WidgetTemplates`, `AssignWidgetTemplat
 | Model | `app/Models/WebsiteWidget.php` extends `PublicEntity` |
 | Factory | `database/factories/WebsiteWidgetFactory.php` |
 | Repository | `WebsiteWidgetRepositoryInterface` → `EloquentWebsiteWidgetRepository` |
-| DTO | `app/DTOs/Widget/WebsiteWidgetDTO.php` |
+| DTO | `app/DTOs/Widget/WebsiteWidgetDTO.php`, `InstallWidgetDTO.php`, `UpdateWebsiteWidgetDTO.php` |
 | Service | `app/Services/Widget/WebsiteWidgetService.php` |
 
 ```
@@ -824,11 +824,11 @@ Bind `WebsiteWidgetRepositoryInterface` in `RepositoryServiceProvider`.
 | Layer | Path |
 |-------|------|
 | Service | `tests/Unit/Services/Widget/WebsiteWidgetServiceTest.php` |
-| DTO | `tests/Unit/DTOs/Widget/WebsiteWidgetDTOTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WebsiteWidgetDTOTest.php`, `InstallWidgetDTOTest.php`, `UpdateWebsiteWidgetDTOTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentWebsiteWidgetRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WebsiteWidgetModelTest.php`, `tests/Unit/Database/WebsiteWidgetsMigrationTest.php` |
 
-OpenAPI schemas: `openapi/openapi.yaml` (`WebsiteWidget`, `WebsiteWidgetStatus`).
+OpenAPI schemas: `openapi/openapi.yaml` (`WebsiteWidget`, `WebsiteWidgetStatus`, `InstallWidgetRequest`, `UpdateWebsiteWidgetRequest`).
 
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 
