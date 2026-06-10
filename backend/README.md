@@ -805,6 +805,15 @@ OpenAPI schemas: `openapi/openapi.yaml` (`WidgetTemplates`, `AssignWidgetTemplat
 | Service | `app/Services/Widget/WebsiteWidgetService.php` |
 
 ```
+WebsiteWidgetRepositoryInterface::listForWebsite(websiteId)
+WebsiteWidgetRepositoryInterface::listForUser(userId)
+WebsiteWidgetRepositoryInterface::findByUuidForWebsite(websiteId, uuid)
+WebsiteWidgetRepositoryInterface::findByUuidForUser(uuid, userId)
+WebsiteWidgetRepositoryInterface::findByWebsiteAndWidgetVersion(websiteId, widgetVersionId)
+WebsiteWidgetRepositoryInterface::create / update / delete (inherited CRUD)
+```
+
+```
 WebsiteWidgetService::listForWebsite(websiteUuid) → list<WebsiteWidgetDTO>
 WebsiteWidgetService::getByUuid(uuid) → WebsiteWidgetDTO
 WebsiteWidgetService::getByUuidForWebsite(websiteUuid, uuid) → WebsiteWidgetDTO

@@ -6,6 +6,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\WebsiteWidget;
 use App\Repositories\Contracts\WebsiteWidgetRepositoryInterface;
+use App\Support\UuidGenerator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -14,13 +15,29 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  */
 final class EloquentWebsiteWidgetRepository extends UuidEloquentRepository implements WebsiteWidgetRepositoryInterface
 {
-    public function findByUuidForWebsite(int $websiteId, string $uuid): ?WebsiteWidget
+    public function findByWebsiteAndWidgetVersion(int $websiteId, int $widgetVersionId): ?WebsiteWidget
     {
         /** @var WebsiteWidget|null $websiteWidget */
         $websiteWidget = $this->newModelQuery()
             ->with(['website', 'widgetVersion'])
             ->where('website_id', $websiteId)
-            ->where('uuid', $uuid)
+            ->where('widget_version_id', $widgetVersionId)
+            ->first();
+
+        return $websiteWidget;
+    }
+
+    public function findByUuidForWebsite(int $websiteId, string $uuid): ?WebsiteWidget
+    {
+        if (! UuidGenerator::isValid($uuid)) {
+            return null;
+        }
+
+        /** @var WebsiteWidget|null $websiteWidget */
+        $websiteWidget = $this->newModelQuery()
+            ->with(['website', 'widgetVersion'])
+            ->where('website_id', $websiteId)
+            ->whereUuid($uuid)
             ->first();
 
         return $websiteWidget;
@@ -37,6 +54,33 @@ final class EloquentWebsiteWidgetRepository extends UuidEloquentRepository imple
         return $websiteWidget;
     }
 
+    public function findByUuidForUser(string $uuid, int $userId): ?WebsiteWidget
+    {
+        if (! UuidGenerator::isValid($uuid)) {
+            return null;
+        }
+
+        /** @var WebsiteWidget|null $websiteWidget */
+        $websiteWidget = $this->newModelQuery()
+            ->with(['website', 'widgetVersion'])
+            ->whereUuid($uuid)
+            ->whereHas('website', fn ($query) => $query->where('user_id', $userId))
+            ->first();
+
+        return $websiteWidget;
+    }
+
+    public function findByUuidForUserOrFail(string $uuid, int $userId): WebsiteWidget
+    {
+        $websiteWidget = $this->findByUuidForUser($uuid, $userId);
+
+        if ($websiteWidget === null) {
+            throw (new ModelNotFoundException)->setModel($this->model());
+        }
+
+        return $websiteWidget;
+    }
+
     /**
      * @return Collection<int, WebsiteWidget>
      */
@@ -45,6 +89,18 @@ final class EloquentWebsiteWidgetRepository extends UuidEloquentRepository imple
         return $this->newModelQuery()
             ->with(['website', 'widgetVersion'])
             ->where('website_id', $websiteId)
+            ->orderByDesc('created_at')
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, WebsiteWidget>
+     */
+    public function listForUser(int $userId): Collection
+    {
+        return $this->newModelQuery()
+            ->with(['website', 'widgetVersion'])
+            ->whereHas('website', fn ($query) => $query->where('user_id', $userId))
             ->orderByDesc('created_at')
             ->get();
     }
