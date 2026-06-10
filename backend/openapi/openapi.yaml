@@ -1545,6 +1545,32 @@ components:
           example:
             - feedback-form
             - newsletter-signup
+    WidgetCategories:
+      type: object
+      description: Categories attached to a widget (`WidgetCategoriesDTO`, `WidgetCategoryService`)
+      required:
+        - widget_uuid
+        - categories
+      properties:
+        widget_uuid:
+          $ref: '#/components/schemas/Uuid'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetCategory'
+    SyncWidgetCategoriesRequest:
+      type: object
+      description: Payload for replacing a widget's category set (`SyncWidgetCategoriesDTO`)
+      required:
+        - category_uuids
+      properties:
+        category_uuids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Uuid'
+          example:
+            - 660e8400-e29b-41d4-a716-446655440001
+            - 770e8400-e29b-41d4-a716-446655440002
     WidgetCategory:
       type: object
       description: Marketplace taxonomy category (`WidgetCategoryDTO`)

@@ -70,6 +70,7 @@
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetVersionRepositoryTest.php</file>
             <file>tests/Unit/Repositories/Eloquent/EloquentWidgetCategoryRepositoryTest.php</file>
+            <file>tests/Unit/Repositories/Eloquent/EloquentWidgetCategoryWidgetRepositoryTest.php</file>
             <file>tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php</file>
         </testsuite>
     </testsuites>

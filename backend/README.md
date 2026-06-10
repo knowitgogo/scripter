@@ -726,16 +726,22 @@ Marketplace taxonomy categories group widgets for discovery. Widgets attach via 
 WidgetCategoryService::list() → list<WidgetCategoryDTO>
 WidgetCategoryService::getByUuid(uuid) → WidgetCategoryDTO
 WidgetCategoryService::getBySlug(slug) → WidgetCategoryDTO
+WidgetCategoryService::listForWidget(widgetUuid) → list<WidgetCategoryDTO>
+WidgetCategoryService::attach(widgetUuid, categoryUuid) → WidgetCategoriesDTO
+WidgetCategoryService::detach(widgetUuid, categoryUuid) → WidgetCategoriesDTO
+WidgetCategoryService::sync(widgetUuid, SyncWidgetCategoriesDTO) → WidgetCategoriesDTO
 ```
+
+Bind `WidgetCategoryWidgetRepositoryInterface` in `RepositoryServiceProvider`.
 
 | Layer | Path |
 |-------|------|
 | Service | `tests/Unit/Services/Widget/WidgetCategoryServiceTest.php` |
-| DTO | `tests/Unit/DTOs/Widget/WidgetCategoryDTOTest.php` |
-| Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetCategoryRepositoryTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetCategoryDTOTest.php`, `WidgetCategoriesDTOTest.php`, `SyncWidgetCategoriesDTOTest.php` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetCategoryRepositoryTest.php`, `EloquentWidgetCategoryWidgetRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WidgetCategoryModelTest.php`, `tests/Unit/Database/WidgetCategoriesMigrationTest.php`, `tests/Unit/Database/WidgetCategoryWidgetMigrationTest.php` |
 
-OpenAPI schema: `openapi/openapi.yaml` (`WidgetCategory`).
+OpenAPI schemas: `openapi/openapi.yaml` (`WidgetCategory`, `WidgetCategories`, `SyncWidgetCategoriesRequest`).
 
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 
