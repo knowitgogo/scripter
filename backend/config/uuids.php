@@ -34,6 +34,7 @@ return [
         'websites',
         'tags',
         'widgets',
+        'widget_categories',
         'widget_versions',
         'website_widgets',
         'plans',

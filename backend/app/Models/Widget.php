@@ -8,6 +8,7 @@ use App\Enums\WidgetStatus;
 use Database\Factories\WidgetFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -25,6 +26,16 @@ final class Widget extends PublicEntity
     public function versions(): HasMany
     {
         return $this->hasMany(WidgetVersion::class);
+    }
+
+    /**
+     * @return BelongsToMany<WidgetCategory, $this>
+     */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(WidgetCategory::class, 'widget_category_widget')
+            ->using(WidgetCategoryWidget::class)
+            ->withTimestamps();
     }
 
     /**

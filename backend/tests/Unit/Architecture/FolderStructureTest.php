@@ -366,6 +366,21 @@ final class FolderStructureTest extends TestCase
             $tests.'/Unit/Repositories/Eloquent/EloquentWidgetVersionRepositoryTest.php',
             $tests.'/Unit/DTOs/Widget/WidgetVersionDTOTest.php',
             $tests.'/Unit/Services/Widget/WidgetVersionServiceTest.php',
+            $app.'/Models/WidgetCategory.php',
+            $app.'/Models/WidgetCategoryWidget.php',
+            $app.'/Repositories/Contracts/WidgetCategoryRepositoryInterface.php',
+            $app.'/Repositories/Eloquent/EloquentWidgetCategoryRepository.php',
+            $app.'/DTOs/Widget/WidgetCategoryDTO.php',
+            $app.'/Services/Widget/WidgetCategoryService.php',
+            dirname(__DIR__, 3).'/database/factories/WidgetCategoryFactory.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_09_180002_create_widget_categories_table.php',
+            dirname(__DIR__, 3).'/database/migrations/2026_06_09_180003_create_widget_category_widget_table.php',
+            $tests.'/Unit/Database/WidgetCategoriesMigrationTest.php',
+            $tests.'/Unit/Database/WidgetCategoryWidgetMigrationTest.php',
+            $tests.'/Feature/Models/WidgetCategoryModelTest.php',
+            $tests.'/Unit/Repositories/Eloquent/EloquentWidgetCategoryRepositoryTest.php',
+            $tests.'/Unit/DTOs/Widget/WidgetCategoryDTOTest.php',
+            $tests.'/Unit/Services/Widget/WidgetCategoryServiceTest.php',
         ];
 
         foreach ($files as $file) {

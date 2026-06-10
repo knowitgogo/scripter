@@ -33,6 +33,7 @@ final class WidgetMarketplaceOpenApiSpecTest extends TestCase
     public function openapi_spec_defines_widget_marketplace_schemas(): void
     {
         $this->assertStringContainsString('Widget:', $this->specContents);
+        $this->assertStringContainsString('WidgetCategory:', $this->specContents);
         $this->assertStringContainsString('WidgetVersion:', $this->specContents);
         $this->assertStringContainsString('WidgetVersionStatus:', $this->specContents);
         $this->assertStringContainsString('WebsiteWidget:', $this->specContents);

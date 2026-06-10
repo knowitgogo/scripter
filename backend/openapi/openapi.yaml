@@ -1545,6 +1545,35 @@ components:
           example:
             - feedback-form
             - newsletter-signup
+    WidgetCategory:
+      type: object
+      description: Marketplace taxonomy category (`WidgetCategoryDTO`)
+      required:
+        - uuid
+        - name
+        - slug
+      properties:
+        uuid:
+          $ref: '#/components/schemas/Uuid'
+        name:
+          type: string
+          maxLength: 100
+          example: Feedback
+        slug:
+          type: string
+          maxLength: 100
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: feedback
+        description:
+          type: string
+          maxLength: 2000
+          example: Widgets for collecting user feedback and surveys.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     RegisterWidgetRequest:
       type: object
       description: Payload for admin widget registration (`RegisterWidgetDTO`)

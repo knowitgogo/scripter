@@ -708,6 +708,35 @@ All require `admin.widgets.publish` and emit audit events (`published`, `depreca
 
 OpenAPI schema and paths: `openapi/openapi.yaml` (`WidgetVersion`, `WidgetVersionStatus`, `POST /widget-versions/{widget_version}/publish`, `POST /widget-versions/{widget_version}/deprecate`, `POST /widget-versions/{widget_version}/rollback`).
 
+### Widget categories
+
+Marketplace taxonomy categories group widgets for discovery. Widgets attach via `widget_category_widget` pivot.
+
+| Component | Location |
+|-----------|----------|
+| Migrations | `2026_06_09_180002_create_widget_categories_table.php`, `2026_06_09_180003_create_widget_category_widget_table.php` |
+| Model | `app/Models/WidgetCategory.php` extends `PublicEntity` |
+| Pivot | `app/Models/WidgetCategoryWidget.php` |
+| Factory | `database/factories/WidgetCategoryFactory.php` |
+| Repository | `WidgetCategoryRepositoryInterface` → `EloquentWidgetCategoryRepository` |
+| DTO | `app/DTOs/Widget/WidgetCategoryDTO.php` |
+| Service | `app/Services/Widget/WidgetCategoryService.php` |
+
+```
+WidgetCategoryService::list() → list<WidgetCategoryDTO>
+WidgetCategoryService::getByUuid(uuid) → WidgetCategoryDTO
+WidgetCategoryService::getBySlug(slug) → WidgetCategoryDTO
+```
+
+| Layer | Path |
+|-------|------|
+| Service | `tests/Unit/Services/Widget/WidgetCategoryServiceTest.php` |
+| DTO | `tests/Unit/DTOs/Widget/WidgetCategoryDTOTest.php` |
+| Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetCategoryRepositoryTest.php` |
+| Model / migration | `tests/Feature/Models/WidgetCategoryModelTest.php`, `tests/Unit/Database/WidgetCategoriesMigrationTest.php`, `tests/Unit/Database/WidgetCategoryWidgetMigrationTest.php` |
+
+OpenAPI schema: `openapi/openapi.yaml` (`WidgetCategory`).
+
 See [docs/WIDGET_MARKETPLACE_ARCHITECTURE.md](../docs/WIDGET_MARKETPLACE_ARCHITECTURE.md) for the full widget marketplace design.
 
 ## Permissions architecture
