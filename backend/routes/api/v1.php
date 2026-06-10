@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\V1\Widget\PublishWidgetVersionController;
 use App\Http\Controllers\Api\V1\Widget\RollbackWidgetVersionController;
 use App\Http\Controllers\Api\V1\Widget\IndexWidgetsController;
 use App\Http\Controllers\Api\V1\Widget\RegisterWidgetController;
+use App\Http\Controllers\Api\V1\Widget\StoreWebsiteWidgetController;
 use App\Enums\Permission;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +71,10 @@ Route::middleware(['auth:api', 'permission:'.Permission::TagsManage->value])->gr
 
 Route::middleware(['auth:api', 'permission:'.Permission::WidgetsView->value])->group(function (): void {
     Route::get('widgets', IndexWidgetsController::class)->name('widgets.index');
+});
+
+Route::middleware(['auth:api', 'permission:'.Permission::WidgetsInstall->value])->group(function (): void {
+    Route::post('website-widgets', StoreWebsiteWidgetController::class)->name('website-widgets.store');
 });
 
 Route::middleware(['auth:api', 'permission:'.Permission::AdminWidgetsPublish->value])->group(function (): void {

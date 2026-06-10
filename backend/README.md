@@ -635,6 +635,8 @@ WidgetService::register(RegisterWidgetDTO, User) → WidgetDTO
 | `category` | Slug equals or starts with `{category}-` |
 | `slugs[]` | Restrict to explicit widget slugs |
 
+**Install on website:** `POST /api/v1/website-widgets` requires `widgets.install`. Installs a published widget version on an owned website and returns `WebsiteWidgetDTO`.
+
 **Admin registration:** `POST /api/v1/widgets` requires `admin.widgets.publish`. Returns `WidgetDTO` with default status `draft`.
 
 **Admin activation/deactivation:**
@@ -653,7 +655,7 @@ Both require `admin.widgets.publish` and emit audit events (`published`, `deprec
 | OpenAPI contract | `tests/Contract/OpenApi/WidgetMarketplaceOpenApiSpecTest.php` |
 | Service | `tests/Unit/Services/Widget/WidgetServiceTest.php` |
 | DTO | `tests/Unit/DTOs/Widget/WidgetDTOTest.php`, `tests/Unit/DTOs/Widget/ListWidgetCatalogQueryDTOTest.php`, `tests/Unit/DTOs/Widget/RegisterWidgetDTOTest.php` |
-| HTTP | `tests/Feature/Widget/WidgetRegistrationFlowTest.php`, `tests/Feature/Widget/WidgetActivationFlowTest.php`, `tests/Feature/Api/V1/Widget/ListWidgetsEndpointTest.php`, `tests/Feature/Api/V1/Widget/WidgetAuthorizationEndpointTest.php` |
+| HTTP | `tests/Feature/Widget/WidgetRegistrationFlowTest.php`, `tests/Feature/Widget/WidgetActivationFlowTest.php`, `tests/Feature/Api/V1/Widget/ListWidgetsEndpointTest.php`, `tests/Feature/Api/V1/Widget/InstallWebsiteWidgetEndpointTest.php`, `tests/Feature/Api/V1/Widget/WidgetAuthorizationEndpointTest.php` |
 | Repository | `tests/Unit/Repositories/Eloquent/EloquentWidgetRepositoryTest.php` |
 | Model / migration | `tests/Feature/Models/WidgetModelTest.php`, `tests/Unit/Database/WidgetsMigrationTest.php` |
 

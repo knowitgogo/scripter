@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Concerns;
 
 use App\Models\User;
+use App\Models\Website;
 use App\Models\Widget;
 use App\Models\WidgetVersion;
 
@@ -39,6 +40,29 @@ trait InteractsWithWidgets
         WidgetVersion::factory()->for($widget)->release('1.0.0')->create();
 
         return $widget;
+    }
+
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    protected function installWidgetPayload(Website $website, WidgetVersion $version, array $overrides = []): array
+    {
+        return array_merge([
+            'website_uuid' => $website->uuid,
+            'widget_version_uuid' => $version->uuid,
+            'configuration' => [
+                'theme' => 'dark',
+                'position' => 'bottom-right',
+            ],
+        ], $overrides);
+    }
+
+    protected function createPublishedWidgetVersion(?Widget $widget = null): WidgetVersion
+    {
+        $widget ??= Widget::factory()->published()->create();
+
+        return WidgetVersion::factory()->for($widget)->published()->create();
     }
 
     protected function createDraftWidgetVersion(

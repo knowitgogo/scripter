@@ -105,4 +105,22 @@ final class WidgetAuthorizationEndpointTest extends TestCase
             ->postJson('/api/v1/widgets/'.$widget->uuid.'/deactivate')
             ->assertForbidden();
     }
+
+    #[Test]
+    public function website_widget_install_returns_401_without_authentication(): void
+    {
+        $this->postJson('/api/v1/website-widgets', [])->assertUnauthorized();
+    }
+
+    #[Test]
+    public function website_widget_install_returns_403_without_widgets_install_permission(): void
+    {
+        config(['permissions.roles.customer' => []]);
+
+        $user = $this->createAuthUser();
+
+        $this->actingAsJwt($user)
+            ->postJson('/api/v1/website-widgets', [])
+            ->assertForbidden();
+    }
 }
